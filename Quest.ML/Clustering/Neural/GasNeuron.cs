@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Quest.ML.Clustering.Neural
 {
-    public class Neuron
+    public class GasNeuron
     {
 		private int id;
 		private double[] weights;
@@ -20,7 +20,7 @@ namespace Quest.ML.Clustering.Neural
 			{
 				return id;
 			}
-			set
+			private set
 			{
 				id = value;
 			}
@@ -59,7 +59,7 @@ namespace Quest.ML.Clustering.Neural
             }
         }
 
-		public Neuron(int id, int numInputDimensions)
+		public GasNeuron(int id, int numInputDimensions)
 		{
 			this.id = id;
 			weights = new double[numInputDimensions];
@@ -75,8 +75,22 @@ namespace Quest.ML.Clustering.Neural
 			{
                 sumOfSquares += Math.Pow(weights[i] - inputs[i], 2);
             }
+			output = Math.Sqrt(sumOfSquares);
+			return output;
+		}
 
-			return Math.Sqrt(sumOfSquares);
+		public void UpdateWeights(double[] weights)
+		{
+			Array.Copy(weights, this.weights, weights.Length);
+        }
+
+		public void IncrementAge()
+		{
+			age++;
+		}
+		public void ResetAge()
+		{
+			age = 0;
 		}
 
 
