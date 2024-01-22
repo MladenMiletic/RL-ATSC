@@ -28,9 +28,9 @@ namespace Quest.ML.Clustering.Neural
             {
                 foreach (var col in row.Value)
                 {
-                    stringBuilder.Append(col.Value + " ");
+                    stringBuilder.Append(col.Value + ' ');
                 }
-                stringBuilder.Append("\n");
+                stringBuilder.Append('\n');
             }
             return stringBuilder.ToString();
         }
