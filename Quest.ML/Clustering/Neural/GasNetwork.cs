@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,6 +12,7 @@ namespace Quest.ML.Clustering.Neural
 		private int id;
         private List<GasNeuron> neurons;
 		private HashSet<Edge> edges;
+		private DistanceMatrix distanceMatrix;
 
         public int ID
 		{
@@ -46,8 +48,20 @@ namespace Quest.ML.Clustering.Neural
 			}
         }
 
-		//TODO id should be asigned by the network
-		public void AddEdge(int id, GasNeuron source, GasNeuron destination)
+		public DistanceMatrix DistanceMatrix
+		{
+			get
+			{
+				return distanceMatrix;
+			}
+			private set
+			{
+				distanceMatrix = value;
+			}
+		}
+
+        //TODO id should be asigned by the network
+        private void AddEdge(int id, GasNeuron source, GasNeuron destination)
 		{
 			Edge newEdge = new Edge(id, source, destination);
 
@@ -62,5 +76,25 @@ namespace Quest.ML.Clustering.Neural
 				//TODO call matrix update
 			}
 		}
+
+        private void RemoveEdge(Edge edge)
+		{
+			edges.Remove(edge);
+			//TODO call matrix update
+		}
+
+        private void AddNeuron(GasNeuron neuron)
+		{
+			neurons.Add(neuron);
+			//TODO call matrix update
+		}
+
+		private void RemoveNeuron(GasNeuron neuron)
+		{
+			neurons.Remove(neuron);
+			//TODO call matrix update
+		}
+
+		
 	}
 }
