@@ -108,7 +108,7 @@ namespace Quest.ML.Clustering.Neural
             return false;
         }
 
-        public void UpdateAfterEdgeAdded(int source, int destination, int level)
+        public void UpdateAfterEdgeAdded(int source, int destination, int? level)
         {
             matrix[source][destination] = level;
             matrix[destination][source] = level;
@@ -118,7 +118,7 @@ namespace Quest.ML.Clustering.Neural
                 int? destinationValue = Matrix[destination][col.Key] + level;
                 if ((sourceValue ?? int.MaxValue) > (destinationValue ?? int.MaxValue))
                 {
-                    UpdateAfterEdgeAdded(col.Key, source, (int)sourceValue);
+                    UpdateAfterEdgeAdded(col.Key, source, destinationValue);
                 }
             }
         }
