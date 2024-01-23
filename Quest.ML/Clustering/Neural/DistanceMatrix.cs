@@ -21,9 +21,33 @@ namespace Quest.ML.Clustering.Neural
             }
         }
 
+        private SortedDictionary<int, int> reached;
+
+        public SortedDictionary<int, int> Reached
+        {
+            get
+            {
+                return reached;
+            }
+            private set
+            {
+                reached = value;
+            }
+        }
+
         public DistanceMatrix()
         {
-            matrix = new SortedDictionary<int, SortedDictionary<int, int?>>();   
+            matrix = new SortedDictionary<int, SortedDictionary<int, int?>>();
+            reached = new SortedDictionary<int, int>();
+        }
+
+        public void ResetReached()
+        {
+            reached = new SortedDictionary<int, int>();
+            foreach (var key in matrix.Keys)
+            {
+                reached.Add(key, 0);
+            }
         }
 
         public override string ToString()
@@ -110,17 +134,27 @@ namespace Quest.ML.Clustering.Neural
 
         public void UpdateAfterEdgeAdded(int source, int destination, int? level)
         {
+            if (source == destination)
+            {
+                return;
+            }
+            if (matrix[source][destination] == level && matrix[destination][source] == level)
+            {
+                return;
+            }
             matrix[source][destination] = level;
             matrix[destination][source] = level;
-            foreach (var col in Matrix[source])
+            var keys = Matrix.Keys.ToList();
+            for (int i = 0; i < keys.Count; i++)
             {
-                int? sourceValue = Matrix[source][col.Key];
-                int? destinationValue = Matrix[destination][col.Key] + level;
+                int? sourceValue = Matrix[source][keys[i]];
+                int? destinationValue = Matrix[destination][keys[i]] + level;
                 if ((sourceValue ?? int.MaxValue) > (destinationValue ?? int.MaxValue))
                 {
-                    UpdateAfterEdgeAdded(col.Key, source, destinationValue);
+                    UpdateAfterEdgeAdded(keys[i], source, destinationValue);
                 }
             }
+            
         }
     }
 }
