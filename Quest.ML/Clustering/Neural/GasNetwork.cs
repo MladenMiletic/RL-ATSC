@@ -47,7 +47,6 @@ namespace Quest.ML.Clustering.Neural
 				edges = value;
 			}
         }
-
 		public DistanceMatrix DistanceMatrix
 		{
 			get
@@ -61,40 +60,64 @@ namespace Quest.ML.Clustering.Neural
 		}
 
         //TODO id should be asigned by the network
-        private void AddEdge(int id, GasNeuron source, GasNeuron destination)
+        private void AddNeuronWithEdge(int id, GasNeuron source, GasNeuron destination)
 		{
-			Edge newEdge = new Edge(id, source, destination);
+			neurons.Add(source);
+			AddEdge(id,source,destination);
+            DistanceMatrix.AddRow(source.ID, destination.ID);
+        }
 
-
-			if (edges.TryGetValue(newEdge, out newEdge)) //TODO test this
-			{
-				newEdge.ResetAge();
-			}
-			else
-			{
-				edges.Add(newEdge);
-				//TODO call matrix update
-			}
+		private void AddOrUpdateEdge(int id, GasNeuron source, GasNeuron destination)
+		{
+			AddEdge(id,source,destination);
+			//TODO UPDATE DISTANCE MATRIX
+			DistanceMatrix.UpdateAfterEdgeAdded(source.ID, destination.ID, 1);
 		}
 
-        private void RemoveEdge(Edge edge)
+		private void AddEdge(int id, GasNeuron source, GasNeuron destination)
+		{
+			Edge newEdge = new Edge(id,source,destination);
+            if (edges.TryGetValue(newEdge, out newEdge)) //TODO test this
+            {
+                newEdge.ResetAge();
+            }
+            else
+            {
+                edges.Add(newEdge);
+            }
+        }
+
+		private void RemoveEdge(Edge edge)
 		{
 			edges.Remove(edge);
-			//TODO call matrix update
+			GasNeuron source = edge.Source;
+			GasNeuron destination = edge.Destination;
+
+			if (!DistanceMatrix.IsConnected(source.ID))
+			{
+				RemoveNeuron(source);
+				DistanceMatrix.RemoveRow(source.ID);
+			}
+			if (!DistanceMatrix.IsConnected(destination.ID))
+			{
+				RemoveNeuron(destination);
+				DistanceMatrix.RemoveRow(destination.ID);
+			}
+			//TODO UPDATE MATRIX AFTER DELETION
+
 		}
 
-        private void AddNeuron(GasNeuron neuron)
+        private void AddNeuronWithoutEdge(GasNeuron source)
 		{
-			neurons.Add(neuron);
-			//TODO call matrix update
+			neurons.Add(source);
+			DistanceMatrix.AddRow(source.ID);
+
 		}
 
 		private void RemoveNeuron(GasNeuron neuron)
 		{
 			neurons.Remove(neuron);
-			//TODO call matrix update
 		}
-
 		
 	}
 }

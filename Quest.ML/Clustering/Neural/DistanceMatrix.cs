@@ -21,6 +21,11 @@ namespace Quest.ML.Clustering.Neural
             }
         }
 
+        public DistanceMatrix()
+        {
+            matrix = new SortedDictionary<int, SortedDictionary<int, int?>>();   
+        }
+
         public override string ToString()
         {
             StringBuilder stringBuilder = new StringBuilder();
@@ -28,7 +33,8 @@ namespace Quest.ML.Clustering.Neural
             {
                 foreach (var col in row.Value)
                 {
-                    stringBuilder.Append(col.Value + ' ');
+                    stringBuilder.Append(col.Value ?? -1);
+                    stringBuilder.Append(' ');
                 }
                 stringBuilder.Append('\n');
             }
@@ -39,7 +45,7 @@ namespace Quest.ML.Clustering.Neural
         /// This hapens only when new neuron is added without edges, no path is represented by null?
         /// </summary>
         /// <param name="id">id of new neuron</param>
-        private void AddRow(int id)
+        public void AddRow(int id)
         {
             SortedDictionary<int, int?> newRow = new SortedDictionary<int, int?>();
             foreach (var row in Matrix)
@@ -56,7 +62,7 @@ namespace Quest.ML.Clustering.Neural
         /// </summary>
         /// <param name="id"></param>
         /// <param name="referenceRow"></param>
-        private void AddRow(int id, int referenceRowId)
+        public void AddRow(int id, int referenceRowId)
         {
             SortedDictionary<int, int?> newRow = new SortedDictionary<int, int?>();
             SortedDictionary<int, int?> referenceRow = Matrix[referenceRowId];
@@ -70,13 +76,13 @@ namespace Quest.ML.Clustering.Neural
 
             foreach (var row in Matrix)
             {
-                row.Value.Add(id, newRow[row.Key].Value);
+                row.Value.Add(id, newRow[row.Key]);
             }
 
             Matrix.Add(id, newRow);
         }
 
-        private void RemoveRow(int id)
+        public void RemoveRow(int id)
         {
             foreach (var row in Matrix)
             {
@@ -85,5 +91,36 @@ namespace Quest.ML.Clustering.Neural
             Matrix.Remove(id);
         }
 
+        //TODO: Tested this, works ok if source and destination exists
+        public int? GetDistance(int idSource, int idDestination)
+        {
+            return Matrix[idSource][idDestination];
+        }
+        public bool IsConnected(int idSource)
+        {
+            foreach (var row in Matrix[idSource])
+            {
+                if (row.Value != null)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void UpdateAfterEdgeAdded(int source, int destination, int level)
+        {
+            matrix[source][destination] = level;
+            matrix[destination][source] = level;
+            foreach (var col in Matrix[source])
+            {
+                int? sourceValue = Matrix[source][col.Key];
+                int? destinationValue = Matrix[destination][col.Key] + level;
+                if ((sourceValue ?? int.MaxValue) > (destinationValue ?? int.MaxValue))
+                {
+                    UpdateAfterEdgeAdded(col.Key, source, (int)sourceValue);
+                }
+            }
+        }
     }
 }
