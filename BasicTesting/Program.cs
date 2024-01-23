@@ -6,21 +6,23 @@ namespace BasicTesting
     {
         static void Main(string[] args)
         {
-            int? a = null;
-            int? b = 4;
+            DistanceMatrix distanceMatrix = new DistanceMatrix();
 
-            Console.WriteLine(GetMinimum(3,5));
-            Console.WriteLine(GetMinimum(null,null));
-            Console.WriteLine(GetMinimum(4,null));
-            Console.WriteLine(GetMinimum(null,6));
-            Console.WriteLine(GetMinimum(5,3));
+            distanceMatrix.AddRow(1);
+            distanceMatrix.AddRow(2);
+            distanceMatrix.AddRow(3,2);
+            distanceMatrix.AddRow(4,3);
+            distanceMatrix.AddRow(5,4);
+
+            Console.WriteLine(distanceMatrix);
+
+            distanceMatrix.UpdateAfterEdgeAdded(1, 4, 1);
+
+            Console.WriteLine(distanceMatrix);
 
             //Console.WriteLine(x);
             Console.ReadKey();
         }
-        static int? GetMinimum(int? a, int? b)
-        {
-            return (a ?? int.MaxValue) < (b ?? int.MaxValue) ? a : b;
-        }
+
     }
 }
