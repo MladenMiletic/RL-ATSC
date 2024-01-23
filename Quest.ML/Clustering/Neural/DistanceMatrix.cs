@@ -142,15 +142,21 @@ namespace Quest.ML.Clustering.Neural
             {
                 return;
             }
-            matrix[source][destination] = level;
-            matrix[destination][source] = level;
-            var keys = Matrix.Keys.ToList();
-            for (int i = 0; i < keys.Count; i++)
+            if (reached[source] > 0)
             {
+                return;
+            }
+            //matrix[source][destination] = level;
+            //matrix[destination][source] = level;
+            var keys = Matrix.Keys.ToList();
+            for (int i = reached[source]; i < keys.Count; i++)
+            {
+                reached[source] = i;
                 int? sourceValue = Matrix[source][keys[i]];
                 int? destinationValue = Matrix[destination][keys[i]] + level;
                 if ((sourceValue ?? int.MaxValue) > (destinationValue ?? int.MaxValue))
                 {
+                    matrix[source][keys[i]] = destinationValue;
                     UpdateAfterEdgeAdded(keys[i], source, destinationValue);
                 }
             }

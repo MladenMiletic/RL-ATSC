@@ -7,37 +7,56 @@ namespace BasicTesting
     {
         static void Main(string[] args)
         {
+            
             DistanceMatrix distanceMatrix = new DistanceMatrix();
 
-            //fill with nodes
-            int nodeCount = 100;
-            for (int i = 1; i <= nodeCount; i++)
+            distanceMatrix.AddRow(1);
+            distanceMatrix.AddRow(2, 1);
+            distanceMatrix.AddRow(3, 2);
+            distanceMatrix.AddRow(4, 3);
+            distanceMatrix.AddRow(5, 3);
+            distanceMatrix.AddRow(6, 5);
+            distanceMatrix.AddRow(7);
+
+            Console.WriteLine(distanceMatrix);
+            Console.WriteLine();
+            distanceMatrix.ResetReached();
+            distanceMatrix.UpdateAfterEdgeAdded(1, 4, 1);
+
+            Console.WriteLine(distanceMatrix);
+            Console.WriteLine();
+            distanceMatrix.ResetReached();
+            distanceMatrix.UpdateAfterEdgeAdded(6, 7, 1);
+            Console.WriteLine(distanceMatrix);
+
+            Console.WriteLine();
+            distanceMatrix.ResetReached();
+            distanceMatrix.UpdateAfterEdgeAdded(3, 7, 1);
+            Console.WriteLine(distanceMatrix);
+            
+
+            //BIG TEST
+            Console.WriteLine("Press key to start big test!");
+            Console.ReadKey();
+            distanceMatrix = new DistanceMatrix();
+            int numNodes = 100;
+            for (int i = 1; i <= numNodes; i++)
             {
                 distanceMatrix.AddRow(i);
             }
 
-            //fill with random edges
-
-            distanceMatrix.ResetReached();
+            //RANDOM EDGES
             Random rand = new Random();
-            for (int j = 1; j <= 100; j++)
+            int numEdges = 1000;
+            for (int i = 0; i < numEdges; i++)
             {
-                int a = rand.Next(1, nodeCount + 1);
-                int b = rand.Next(1, nodeCount + 1);
-                distanceMatrix.UpdateAfterEdgeAdded(a,b,1);
+                distanceMatrix.ResetReached();
+                int source = rand.Next(1, numNodes + 1);
+                int destination = rand.Next(1,numNodes + 1);
+                distanceMatrix.UpdateAfterEdgeAdded(source, destination, 1);
             }
-            Console.WriteLine("DONE");
-            //Console.WriteLine(distanceMatrix);
 
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            int x = rand.Next(1, nodeCount + 1);
-            int y = rand.Next(1, nodeCount + 1);
-            distanceMatrix.UpdateAfterEdgeAdded(x, y, 1);
-            stopwatch.Stop();
-
-            Console.WriteLine(stopwatch.ElapsedMilliseconds);
-
+            Console.WriteLine("DONE!!!!!!");
             Console.ReadKey();
         }
 
