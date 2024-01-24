@@ -167,7 +167,6 @@ namespace Quest.ML.Clustering.Neural
                     UpdateAfterEdgeAdded(key, source, Matrix[destination][key] + level);
                 }
             }
-
         }
     }
 }
