@@ -21,16 +21,19 @@ namespace BasicTesting
             Console.WriteLine(distanceMatrix);
             Console.WriteLine();
             distanceMatrix.ResetReached();
+
             distanceMatrix.UpdateAfterEdgeAdded(1, 4, 1);
 
             Console.WriteLine(distanceMatrix);
             Console.WriteLine();
             distanceMatrix.ResetReached();
+
             distanceMatrix.UpdateAfterEdgeAdded(6, 7, 1);
             Console.WriteLine(distanceMatrix);
 
             Console.WriteLine();
             distanceMatrix.ResetReached();
+
             distanceMatrix.UpdateAfterEdgeAdded(3, 7, 1);
             Console.WriteLine(distanceMatrix);
             
@@ -39,7 +42,7 @@ namespace BasicTesting
             Console.WriteLine("Press key to start big test!");
             Console.ReadKey();
             distanceMatrix = new DistanceMatrix();
-            int numNodes = 100;
+            int numNodes = 1000;
             for (int i = 1; i <= numNodes; i++)
             {
                 distanceMatrix.AddRow(i);
@@ -53,7 +56,7 @@ namespace BasicTesting
                 distanceMatrix.ResetReached();
                 int source = rand.Next(1, numNodes + 1);
                 int destination = rand.Next(1,numNodes + 1);
-                distanceMatrix.UpdateAfterEdgeAdded(source, destination, 1);
+                distanceMatrix.UpdateAfterEdgeAdded(source, destination);
             }
 
             Console.WriteLine("DONE!!!!!!");

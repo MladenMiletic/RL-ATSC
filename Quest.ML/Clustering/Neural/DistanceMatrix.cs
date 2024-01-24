@@ -21,6 +21,8 @@ namespace Quest.ML.Clustering.Neural
             }
         }
 
+        
+
         private SortedDictionary<int, int> reached;
 
         public SortedDictionary<int, int> Reached
@@ -34,6 +36,7 @@ namespace Quest.ML.Clustering.Neural
                 reached = value;
             }
         }
+
 
         public DistanceMatrix()
         {
@@ -132,35 +135,39 @@ namespace Quest.ML.Clustering.Neural
             return false;
         }
 
-        public void UpdateAfterEdgeAdded(int source, int destination, int? level)
+        /// <summary>
+        /// Updates the distance matrix after a new edge is added. Before runing the methods that reset reached should be run.
+        /// </summary>
+        /// <param name="source">ID of source vertex</param>
+        /// <param name="destination">ID of distance vertex</param>
+        /// <param name="level">Current level should be set to 1 initially</param>
+        public void UpdateAfterEdgeAdded(int source, int destination, int? level=1)
         {
-            if (source == destination)
+            //this row is already being updated recursively, this is used to speed up the computation and prevent stackoverflow exception
+            if (reached[source] == 1)
             {
                 return;
             }
+            //there is already a calculated link between source and destination
             if (matrix[source][destination] == level && matrix[destination][source] == level)
             {
                 return;
             }
-            if (reached[source] > 0)
+            //nothing needs to be done in this case, should not happen in actual scenarios but is here for testing purposes
+            if (source == destination) 
             {
                 return;
             }
-            //matrix[source][destination] = level;
-            //matrix[destination][source] = level;
-            var keys = Matrix.Keys.ToList();
-            for (int i = reached[source]; i < keys.Count; i++)
+            foreach (var key in Matrix.Keys)
             {
-                reached[source] = i;
-                int? sourceValue = Matrix[source][keys[i]];
-                int? destinationValue = Matrix[destination][keys[i]] + level;
-                if ((sourceValue ?? int.MaxValue) > (destinationValue ?? int.MaxValue))
+                reached[source] = 1;
+                if ((Matrix[source][key] ?? int.MaxValue) > (Matrix[destination][key] + level ?? int.MaxValue))
                 {
-                    matrix[source][keys[i]] = destinationValue;
-                    UpdateAfterEdgeAdded(keys[i], source, destinationValue);
+                    matrix[source][key] = Matrix[destination][key] + level;
+                    UpdateAfterEdgeAdded(key, source, Matrix[destination][key] + level);
                 }
             }
-            
+
         }
     }
 }
