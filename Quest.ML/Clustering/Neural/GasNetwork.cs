@@ -71,7 +71,7 @@ namespace Quest.ML.Clustering.Neural
 		{
 			AddEdge(id,source,destination);
 			//TODO UPDATE DISTANCE MATRIX
-			DistanceMatrix.UpdateAfterEdgeAdded(source.ID, destination.ID, 1);
+			DistanceMatrix.UpdateAfterEdgeAdded(source.ID, destination.ID);
 		}
 
 		private void AddEdge(int id, GasNeuron source, GasNeuron destination)

@@ -144,10 +144,10 @@ namespace Quest.ML.Clustering.Neural
         public void UpdateAfterEdgeAdded(int source, int destination, int? level=1)
         {
             //this row is already being updated recursively, this is used to speed up the computation and prevent stackoverflow exception
-            if (reached[source] == 1)
-            {
-                return;
-            }
+            //if (reached[source] == 1)
+            //{
+            //    return;
+            //}
             //there is already a calculated link between source and destination
             if (matrix[source][destination] == level && matrix[destination][source] == level)
             {
@@ -163,9 +163,51 @@ namespace Quest.ML.Clustering.Neural
                 reached[source] = 1;
                 if ((Matrix[source][key] ?? int.MaxValue) > (Matrix[destination][key] + level ?? int.MaxValue))
                 {
+                    Console.WriteLine($"CHANGE: [{source},{key}] = [{Matrix[destination][key]} + {level} = {Matrix[destination][key] + level}]");
+                    Console.ReadKey();
                     matrix[source][key] = Matrix[destination][key] + level;
                     UpdateAfterEdgeAdded(key, source, Matrix[destination][key] + level);
                 }
+            }
+        }
+        public void UpdateAfterEdgeAddedNew(int source, int destination, int? level = 1)
+        {
+            //this row is already being updated recursively, this is used to speed up the computation and prevent stackoverflow exception
+            //if (reached[source] == 1)
+            //{
+            //    return;
+            //}
+            //there is already a calculated link between source and destination
+            if (matrix[source][destination] == level && matrix[destination][source] == level)
+            {
+                return;
+            }
+            //nothing needs to be done in this case, should not happen in actual scenarios but is here for testing purposes
+            if (source == destination)
+            {
+                return;
+            }
+            foreach (var key in Matrix.Keys)
+            {
+                reached[source] = 1;
+                if ((Matrix[source][key] ?? int.MaxValue) > (Matrix[destination][key] + level ?? int.MaxValue))
+                {
+                    Console.WriteLine($"CHANGE: [{source},{key}] = [{Matrix[destination][key]} + {level} = {Matrix[destination][key] + level}]");
+                    Console.ReadKey();
+                    matrix[source][key] = Matrix[destination][key] + level;
+                    
+                    UpdateAfterEdgeAddedNew(key, source, Matrix[destination][key] + level);
+
+                }
+                else if ((Matrix[source][key] ?? int.MaxValue) < (Matrix[destination][key] + level ?? int.MaxValue))
+                {
+                    Console.WriteLine($"CHANGE X: [{destination},{key}] = [{Matrix[source][key]} + {level} = {Matrix[source][key] + level}]");
+                    Console.ReadKey();
+                    matrix[destination][key] = Matrix[source][key] + level;
+
+                    UpdateAfterEdgeAddedNew(key, source, Matrix[destination][key] - level);
+                }
+
             }
         }
     }

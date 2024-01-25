@@ -14,30 +14,28 @@ namespace BasicTesting
             distanceMatrix.AddRow(2, 1);
             distanceMatrix.AddRow(3, 2);
             distanceMatrix.AddRow(4, 3);
-            distanceMatrix.AddRow(5, 3);
+            distanceMatrix.AddRow(5, 4);
             distanceMatrix.AddRow(6, 5);
-            distanceMatrix.AddRow(7);
-
             Console.WriteLine(distanceMatrix);
             Console.WriteLine();
             distanceMatrix.ResetReached();
+            distanceMatrix.UpdateAfterEdgeAdded(2, 6);
 
-            distanceMatrix.UpdateAfterEdgeAdded(1, 4, 1);
+            Console.WriteLine(distanceMatrix);
+
+            distanceMatrix = new DistanceMatrix();
+
+            distanceMatrix.AddRow(1);
+            distanceMatrix.AddRow(2, 1);
+            distanceMatrix.AddRow(3, 2);
+            distanceMatrix.AddRow(4, 3);
+            distanceMatrix.AddRow(5, 4);
+            distanceMatrix.AddRow(6, 5);
+            distanceMatrix.ResetReached();
+            distanceMatrix.UpdateAfterEdgeAddedNew(2, 6);
 
             Console.WriteLine(distanceMatrix);
             Console.WriteLine();
-            distanceMatrix.ResetReached();
-
-            distanceMatrix.UpdateAfterEdgeAdded(6, 7, 1);
-            Console.WriteLine(distanceMatrix);
-
-            Console.WriteLine();
-            distanceMatrix.ResetReached();
-
-            distanceMatrix.UpdateAfterEdgeAdded(3, 7, 1);
-            Console.WriteLine(distanceMatrix);
-            
-
             //BIG TEST
             Console.WriteLine("Press key to start big test!");
             Console.ReadKey();
