@@ -190,6 +190,8 @@ namespace Quest.ML.Clustering.Neural
             foreach (var key in Matrix.Keys)
             {
                 reached[source] = 1;
+                //Matrix[destination][source] = level;
+                Matrix[source][destination] = level;
                 if ((Matrix[source][key] ?? int.MaxValue) > (Matrix[destination][key] + level ?? int.MaxValue))
                 {
                     Console.WriteLine($"CHANGE: [{source},{key}] = [{Matrix[destination][key]} + {level} = {Matrix[destination][key] + level}]");
@@ -199,14 +201,7 @@ namespace Quest.ML.Clustering.Neural
                     UpdateAfterEdgeAddedNew(key, source, Matrix[destination][key] + level);
 
                 }
-                else if ((Matrix[source][key] ?? int.MaxValue) < (Matrix[destination][key] + level ?? int.MaxValue))
-                {
-                    Console.WriteLine($"CHANGE X: [{destination},{key}] = [{Matrix[source][key]} + {level} = {Matrix[source][key] + level}]");
-                    Console.ReadKey();
-                    matrix[destination][key] = Matrix[source][key] + level;
-
-                    UpdateAfterEdgeAddedNew(key, source, Matrix[destination][key] - level);
-                }
+                
 
             }
         }

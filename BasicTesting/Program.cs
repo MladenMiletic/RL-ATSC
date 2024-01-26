@@ -19,7 +19,7 @@ namespace BasicTesting
             Console.WriteLine(distanceMatrix);
             Console.WriteLine();
             distanceMatrix.ResetReached();
-            distanceMatrix.UpdateAfterEdgeAdded(2, 6);
+            distanceMatrix.UpdateAfterEdgeAdded(6, 2);
 
             Console.WriteLine(distanceMatrix);
 
@@ -32,7 +32,7 @@ namespace BasicTesting
             distanceMatrix.AddRow(5, 4);
             distanceMatrix.AddRow(6, 5);
             distanceMatrix.ResetReached();
-            distanceMatrix.UpdateAfterEdgeAddedNew(2, 6);
+            distanceMatrix.UpdateAfterEdgeAddedNew(6, 2);
 
             Console.WriteLine(distanceMatrix);
             Console.WriteLine();
