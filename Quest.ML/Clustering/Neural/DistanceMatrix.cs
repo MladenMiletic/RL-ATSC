@@ -21,36 +21,9 @@ namespace Quest.ML.Clustering.Neural
             }
         }
 
-        
-
-        private SortedDictionary<int, int> reached;
-
-        public SortedDictionary<int, int> Reached
-        {
-            get
-            {
-                return reached;
-            }
-            private set
-            {
-                reached = value;
-            }
-        }
-
-
         public DistanceMatrix()
         {
             matrix = new SortedDictionary<int, SortedDictionary<int, int?>>();
-            reached = new SortedDictionary<int, int>();
-        }
-
-        public void ResetReached()
-        {
-            reached = new SortedDictionary<int, int>();
-            foreach (var key in matrix.Keys)
-            {
-                reached.Add(key, 0);
-            }
         }
 
         public override string ToString()
@@ -143,67 +116,23 @@ namespace Quest.ML.Clustering.Neural
         /// <param name="level">Current level should be set to 1 initially</param>
         public void UpdateAfterEdgeAdded(int source, int destination, int? level=1)
         {
-            //this row is already being updated recursively, this is used to speed up the computation and prevent stackoverflow exception
-            //if (reached[source] == 1)
-            //{
-            //    return;
-            //}
-            //there is already a calculated link between source and destination
             if (matrix[source][destination] == level && matrix[destination][source] == level)
             {
                 return;
             }
-            //nothing needs to be done in this case, should not happen in actual scenarios but is here for testing purposes
             if (source == destination) 
             {
                 return;
             }
             foreach (var key in Matrix.Keys)
             {
-                reached[source] = 1;
                 if ((Matrix[source][key] ?? int.MaxValue) > (Matrix[destination][key] + level ?? int.MaxValue))
                 {
-                    Console.WriteLine($"CHANGE: [{source},{key}] = [{Matrix[destination][key]} + {level} = {Matrix[destination][key] + level}]");
-                    Console.ReadKey();
                     matrix[source][key] = Matrix[destination][key] + level;
                     UpdateAfterEdgeAdded(key, source, Matrix[destination][key] + level);
                 }
             }
         }
-        public void UpdateAfterEdgeAddedNew(int source, int destination, int? level = 1)
-        {
-            //this row is already being updated recursively, this is used to speed up the computation and prevent stackoverflow exception
-            //if (reached[source] == 1)
-            //{
-            //    return;
-            //}
-            //there is already a calculated link between source and destination
-            if (matrix[source][destination] == level && matrix[destination][source] == level)
-            {
-                return;
-            }
-            //nothing needs to be done in this case, should not happen in actual scenarios but is here for testing purposes
-            if (source == destination)
-            {
-                return;
-            }
-            foreach (var key in Matrix.Keys)
-            {
-                reached[source] = 1;
-                //Matrix[destination][source] = level;
-                Matrix[source][destination] = level;
-                if ((Matrix[source][key] ?? int.MaxValue) > (Matrix[destination][key] + level ?? int.MaxValue))
-                {
-                    Console.WriteLine($"CHANGE: [{source},{key}] = [{Matrix[destination][key]} + {level} = {Matrix[destination][key] + level}]");
-                    Console.ReadKey();
-                    matrix[source][key] = Matrix[destination][key] + level;
-                    
-                    UpdateAfterEdgeAddedNew(key, source, Matrix[destination][key] + level);
-
-                }
-                
-
-            }
-        }
+        
     }
 }
