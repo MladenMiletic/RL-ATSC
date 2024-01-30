@@ -109,7 +109,7 @@ namespace Quest.ML.Clustering.Neural
         }
 
         /// <summary>
-        /// Updates the distance matrix after a new edge is added. Before runing the methods that reset reached should be run.
+        /// Updates the distance matrix after a new edge is added..
         /// </summary>
         /// <param name="source">ID of source vertex</param>
         /// <param name="destination">ID of distance vertex</param>
