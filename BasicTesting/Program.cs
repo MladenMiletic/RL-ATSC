@@ -30,6 +30,10 @@ namespace BasicTesting
             CaricNode<int> noviNode = new CaricNode<int>(2, 2);
 
             stablo.AddNode(stablo.Root, noviNode);
+            stablo.AddNode(stablo.Root, new CaricNode<int>(3, 3));
+            stablo.AddNode(stablo.Root, new CaricNode<int>(4, 4));
+
+            stablo.AddNode(stablo.Root.Children[3], new CaricNode<int>(5, 5));
 
             Console.WriteLine($"Trenutno stablo ima {stablo.Count} elemenata");
 

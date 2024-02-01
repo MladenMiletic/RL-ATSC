@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Quest.ML.Clustering.Neural
 {
@@ -37,17 +38,12 @@ namespace Quest.ML.Clustering.Neural
             };
         }
 
+        
+
         public override string ToString()
         {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("Tree: ");
-            foreach (var node in Nodes)
-            {
-                stringBuilder.Append(node.ToString());
-                stringBuilder.Append(' ');
-            }
-
-            return stringBuilder.ToString();
+            return Root!.PrintAllChildren();
+            
         }
 
         public void Clear()
@@ -118,6 +114,23 @@ namespace Quest.ML.Clustering.Neural
         {
             Children.Remove(child.ID);
         }
+
+        public string PrintAllChildren(string indent = "")
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(indent);
+            sb.Append("|=");
+            indent += "| ";
+            sb.AppendLine(this.ToString());
+
+            foreach (var child in Children.Values)
+            {
+                sb.Append(child.PrintAllChildren(indent));
+            }
+
+            return sb.ToString();
+        }
+
         public override string ToString()
         {
             return Data.ToString();
