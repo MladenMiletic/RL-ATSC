@@ -7,7 +7,7 @@ namespace BasicTesting
     {
         static void Main(string[] args)
         {
-            
+            /*
             DistanceMatrix distanceMatrix = new DistanceMatrix();
 
             distanceMatrix.AddRow(1);  //Dodaje čvor koji nije povezan
@@ -21,6 +21,19 @@ namespace BasicTesting
             distanceMatrix.UpdateAfterEdgeAdded(6, 2); //Dodaje edge izmedu 6 i 2
 
             Console.WriteLine(distanceMatrix);
+            */
+
+            CaricTree<int> stablo = new CaricTree<int>(1, 1);
+
+            Console.WriteLine($"Trenutno stablo ima {stablo.Count} elemenata");
+
+            CaricNode<int> noviNode = new CaricNode<int>(2, 2);
+
+            stablo.AddNode(stablo.Root, noviNode);
+
+            Console.WriteLine($"Trenutno stablo ima {stablo.Count} elemenata");
+
+            Console.WriteLine(stablo);
 
             Console.ReadKey();
         }
