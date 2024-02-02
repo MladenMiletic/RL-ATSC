@@ -1,5 +1,7 @@
 ﻿using Quest.ML.Clustering.Neural;
 using System.Diagnostics;
+using PlotGraph;
+using MathWorks.MATLAB.NET.Arrays;
 
 namespace BasicTesting
 {
@@ -71,7 +73,12 @@ namespace BasicTesting
 
             Console.WriteLine(stabloN1);
             //Console.WriteLine(stabloN2);
-
+            MatlabGrapher matlab = new MatlabGrapher();
+            double[] source = {1,2,3,3,5};
+            double[] destination = {2,3,4,5,6};
+            MWNumericArray AIn = new MWNumericArray(source);
+            MWNumericArray BIn = new MWNumericArray(destination);
+            matlab.PlotGraph(AIn, BIn);
 
 
             Console.ReadKey();

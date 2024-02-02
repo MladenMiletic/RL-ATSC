@@ -127,8 +127,8 @@ namespace Quest.ML.Clustering.Neural
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(indent);
-            sb.Append("|=");
-            indent += "| ";
+            sb.Append(" =");
+            indent += "  ";
             sb.AppendLine(this.ToString());
 
             foreach (var child in Children.Values)
