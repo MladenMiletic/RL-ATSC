@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Quest.ML.Clustering.Neural
 {
-    public class GasNeuron
+    public class GasNeuron : IComparable<GasNeuron>
     {
 		private int id;
 		private double[] weights;
@@ -93,6 +93,18 @@ namespace Quest.ML.Clustering.Neural
 			age = 0;
 		}
 
+        public int CompareTo(GasNeuron? other)
+        {
+            if (other == null)
+            {
+				throw new ArgumentNullException("Cant compare null values");
+            }
+            return this.ID.CompareTo(other!.ID);
+        }
 
-	}
+        public override string ToString()
+        {
+            return $"GasNeuron ID: {ID}";
+        }
+    }
 }

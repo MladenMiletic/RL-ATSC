@@ -13,7 +13,7 @@ namespace Quest.ML.Clustering.Neural
     {
         public int ID
         {
-            get; set; 
+            get => Root.ID;
         }
         public List<CaricNode<T>> Nodes
         {
@@ -42,8 +42,7 @@ namespace Quest.ML.Clustering.Neural
 
         public override string ToString()
         {
-            return Root!.PrintAllChildren();
-            
+            return $"Tree contains {Count} elements\n" + Root!.PrintAllChildren();
         }
 
         public void Clear()
@@ -85,6 +84,15 @@ namespace Quest.ML.Clustering.Neural
         public void AddNode(CaricNode<T> parent, CaricNode<T> child)
         {
             this.Add(child);
+            parent.AddChild(child);
+        }
+
+        public void AddNode(int idParent, CaricNode<T> child)
+        {
+            this.Add(child);
+            CaricNode<T> parent = (from node in Nodes
+                         where node.ID == idParent
+                         select node).FirstOrDefault();
             parent.AddChild(child);
         }
     }
