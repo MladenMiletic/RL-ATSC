@@ -11,15 +11,4 @@
     <ProjectReference Include="..\Quest.ML\Quest.ML.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="MWArray">
-      <HintPath>..\..\..\..\..\..\..\Program Files\Polyspace\R2020b\toolbox\dotnetbuilder\bin\win64\v4.0\MWArray.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="PlotGraph">
-      <HintPath>..\..\..\..\..\Desktop\PlotGraphNew\for_testing\PlotGraph.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-  </ItemGroup>
-
 </Project>

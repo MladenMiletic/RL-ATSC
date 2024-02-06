@@ -17,13 +17,13 @@ namespace Quest.ML.Clustering.Neural
         }
         public List<CaricNode<T>> Nodes
         {
-            get; set;
-        } = null!;
-
-        public CaricNode<T>? Root
-        {
             get; private set;
         } = null!;
+
+        public CaricNode<T> Root
+        {
+            get; private set;
+        }
 
         public int Count => Nodes.Count();
 
@@ -31,7 +31,7 @@ namespace Quest.ML.Clustering.Neural
 
         public CaricTree(int id,T rootData)
         {
-            Root = new CaricNode<T>(id,rootData);
+            Root = new CaricNode<T>(id,rootData, 0);
             Nodes = new List<CaricNode<T>>
             {
                 Root
@@ -42,7 +42,7 @@ namespace Quest.ML.Clustering.Neural
 
         public override string ToString()
         {
-            return $"Tree contains {Count} elements\n" + Root!.PrintAllChildren();
+            return $"Tree with ID {ID} contains {Count} elements\n" + Root!.PrintAllChildren();
         }
 
         public void Clear()
@@ -81,19 +81,23 @@ namespace Quest.ML.Clustering.Neural
             return ((IEnumerable)Nodes).GetEnumerator();
         }
 
-        public void AddNode(CaricNode<T> parent, CaricNode<T> child)
+        public CaricNode<T> AddNode(CaricNode<T> parent, CaricNode<T> child)
         {
+            child.Level = parent.Level + 1;
             this.Add(child);
             parent.AddChild(child);
+            return child;
         }
 
-        public void AddNode(int idParent, CaricNode<T> child)
+        public CaricNode<T> AddNode(int idParent, CaricNode<T> child)
         {
             this.Add(child);
-            CaricNode<T> parent = (from node in Nodes
+            CaricNode<T>? parent = (from node in Nodes
                          where node.ID == idParent
                          select node).FirstOrDefault();
+            child.Level = parent.Level + 1;
             parent.AddChild(child);
+            return child;
         }
     }
 
@@ -108,15 +112,22 @@ namespace Quest.ML.Clustering.Neural
         {
             get; set;
         }
-        public CaricNode(int id, T data)
+        public int Level
+        {
+            get;
+            set;
+        }
+        public CaricNode(int id, T data, int level = 0)
         {
             ID = id;
             Data = data;
+            Level = level;
             Children = new SortedList<int, CaricNode<T>>();
         }
         public void AddChild(CaricNode<T> child)
         {
             Children.Add(child.ID, child);
+            child.Level = this.Level + 1;
         }
         public void RemoveChild(CaricNode<T> child)
         {
