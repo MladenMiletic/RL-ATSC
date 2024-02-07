@@ -5,22 +5,19 @@ namespace BasicTesting
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            CaricNetwork<int> net = new CaricNetwork<int>();
+            Node node1 = new Node();
+            Node node2 = new Node();
 
-            net.AddUnconnetedNode(1);
+            Graph<Node, GraphEdge<Node>> graph = [];
 
-            Console.WriteLine(net);
+            graph.Add(node1);
+            graph.Add(node2);
 
-            Console.WriteLine();
+            GraphEdge<Node> edge = new GraphEdge<Node>(node1, node2);
+            graph.Edges.Add(edge);
 
-            net.AddConnectedNode(0, 1, 2);
-            net.AddConnectedNode(0, 1, 3);
-
-            Console.WriteLine(net);
-
-            Console.ReadKey();
         }
 
     }
