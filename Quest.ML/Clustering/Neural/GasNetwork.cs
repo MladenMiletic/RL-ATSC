@@ -7,8 +7,15 @@ using System.Threading.Tasks;
 
 namespace Quest.ML.Clustering.Neural
 {
-    public class GasNetwork
+    public class GasNetwork : Graph<GasNeuron, GasEdge>
     {
-        
+        //TODO
+        /* Network parameters and attributes
+         * Constructor
+         * Initial network generation
+         * Compute - GET BMU, add remove and so on
+         * Update weights of neurons
+         * 
+         */
 	}
 }

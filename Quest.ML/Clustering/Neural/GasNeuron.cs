@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Quest.ML.Clustering.Neural
 {
-    public class GasNeuron : Node
+    public class GasNeuron(int id) : Node(id)
     {
-        private double[] weights;
-        private int age;
-        private int activationCounter;
+        private double[] weights = [];
+        private int age = 0;
+        private int activationCounter = 0;
         private double output;
-
-        public GasNeuron(int id) : base(id)
-        {
-        }
 
         public double[] Weights
         {
@@ -45,6 +42,48 @@ namespace Quest.ML.Clustering.Neural
             {
                 return activationCounter;
             }
+            private set
+            {
+                activationCounter = value;
+            }
         }
+        public void SetWeights(double[] weights)
+        {
+            Weights = new double[weights.Length];
+            Array.Copy(weights, Weights, weights.Length);
+        }
+
+        public double Compute(double[] input)
+        {
+            if (weights.Length != input.Length)
+            {
+                throw new ArgumentException("Input must have the same dimensionality as weights of this neuron");
+            }
+            double sum = 0;
+            for (int i = 0; i < weights.Length; i++)
+            {
+                double diff = weights[i] - input[i];
+                sum += diff * diff;
+            }
+            return Math.Sqrt(sum);
+        }
+
+        public void IncrementAge()
+        {
+            Age++;
+        }
+        public void ResetAge()
+        {
+            Age = 0; 
+        }
+        public void IncrementActivationCounter()
+        {
+            ActivationCounter++;
+        }
+        public void ResetActivationCounter()
+        {
+            ActivationCounter = 0;
+        }
+
     }
 }

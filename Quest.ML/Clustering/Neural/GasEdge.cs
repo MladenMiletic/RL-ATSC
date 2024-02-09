@@ -10,6 +10,9 @@ namespace Quest.ML.Clustering.Neural
     {
         public GasEdge(GasNeuron source, GasNeuron target) : base(source, target)
         {
+            //TODO
+            /* Track age and so on
+             */
         }
     }
 }
