@@ -7,8 +7,9 @@ namespace BasicTesting
     {
         static void Main()
         {
-            Node node1 = new Node();
-            Node node2 = new Node();
+            Node node1 = new Node(1);
+            Node node2 = new Node(2);
+            Node node3 = new Node(3);
 
             Graph<Node, GraphEdge<Node>> graph = [];
 

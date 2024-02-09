@@ -8,23 +8,15 @@ namespace Quest.ML.Clustering.Neural
 {
     public class GasNeuron : Node
     {
-        private int id;
         private double[] weights;
         private int age;
         private int activationCounter;
         private double output;
 
-        public int ID
+        public GasNeuron(int id) : base(id)
         {
-            get
-            {
-                return id;
-            }
-            private set
-            {
-                id = value;
-            }
         }
+
         public double[] Weights
         {
             get

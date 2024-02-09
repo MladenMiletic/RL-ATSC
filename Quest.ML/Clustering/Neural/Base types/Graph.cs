@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -84,6 +85,10 @@ namespace Quest.ML.Clustering.Neural
 
         public bool Remove(T1 item)
         {
+            if (!this.Contains(item))
+            {
+                throw new Exception("Node does not exist in the graph");
+            } 
             //Remove item from its connections //also delete edges
             foreach (var node in item.Connections)
             {
@@ -103,11 +108,15 @@ namespace Quest.ML.Clustering.Neural
         {
            return ((IEnumerable)Nodes).GetEnumerator();
         }
-        public void AddEdge(T1 source, T1 target)
+        public T2 AddEdge(T1 source, T1 target)
         {
             if (source == null || target == null)
             {
                 throw new ArgumentNullException();
+            }
+            if (!this.Contains(source) || !this.Contains(target))
+            {
+                throw new Exception();
             }
             T2 edge = (T2)Activator.CreateInstance(typeof(T2), new object[] {source, target});
             if (!edges.Contains(edge))
@@ -115,7 +124,9 @@ namespace Quest.ML.Clustering.Neural
                 edges.Add(edge);
                 source.AddConnection(target);
                 target.AddConnection(source);
+                
             }
+            return edge;
         }
         public void RemoveEdge(T1 source, T1 target)
         {
@@ -129,6 +140,10 @@ namespace Quest.ML.Clustering.Neural
                 edges.Remove(edge);
                 source.RemoveConnection(target);
                 target.RemoveConnection(source);
+            }
+            else
+            {
+                throw new Exception("Edge does not exist");
             }
         }
     }
