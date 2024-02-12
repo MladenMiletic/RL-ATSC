@@ -13,6 +13,7 @@ namespace Quest.ML.Clustering.Neural
         private int age = 0;
         private int activationCounter = 0;
         private double output;
+        private bool wasMoved = false;
 
         public double[] Weights
         {
@@ -45,6 +46,18 @@ namespace Quest.ML.Clustering.Neural
             private set
             {
                 activationCounter = value;
+            }
+        }
+
+        public bool WasMoved
+        {
+            get
+            {
+                return wasMoved;
+            }
+            private set
+            {
+                wasMoved = value;
             }
         }
         public void SetWeights(double[] weights)

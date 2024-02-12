@@ -6,13 +6,27 @@ using System.Threading.Tasks;
 
 namespace Quest.ML.Clustering.Neural
 {
-    public class GasEdge : GraphEdge<GasNeuron>
+    public class GasEdge(GasNeuron source, GasNeuron target) : GraphEdge<GasNeuron>(source, target)
     {
-        public GasEdge(GasNeuron source, GasNeuron target) : base(source, target)
+        private int age = 0;
+
+        public int Age
         {
-            //TODO
-            /* Track age and so on
-             */
+            get
+            {
+                return age;
+            }
+            private set
+            {
+                age = value;
+            }
         }
+
+        public void ResetAge()
+        {
+            Age = 0;
+        }
+        
+    
     }
 }
