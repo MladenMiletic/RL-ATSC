@@ -48,7 +48,7 @@ namespace Quest.ML.Clustering.Neural
 
         public bool IsReadOnly => false;
 
-        public void Add(T1 item)
+        public virtual void Add(T1 item)
         {
             Nodes.Add(item);
         }

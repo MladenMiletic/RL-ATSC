@@ -18,7 +18,7 @@ namespace Quest.ML.UnitTests
         public void Compute_VariousInputs_CorrectCalculation(double[] inputs, double[] weights, double expectedResult)
         {
             //Arrange
-            GasNeuron gasNeuron = new GasNeuron(1);
+            GasNeuron gasNeuron = new GasNeuron(weights.Length);
             gasNeuron.SetWeights(weights);
 
             //Act

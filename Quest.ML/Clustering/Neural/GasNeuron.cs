@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Quest.ML.Clustering.Neural
 {
-    public class GasNeuron(int id) : Node(id)
+    public class GasNeuron(int inputDimensionality) : Node(-1)
     {
-        private double[] weights = [];
+        private double[] weights = new double[inputDimensionality];
         private int age = 0;
         private int activationCounter = 0;
         private double output;
@@ -60,6 +60,13 @@ namespace Quest.ML.Clustering.Neural
                 wasMoved = value;
             }
         }
+        public double Output
+        {
+            get
+            {
+                return output;
+            }
+        }
         public void SetWeights(double[] weights)
         {
             Weights = new double[weights.Length];
@@ -78,7 +85,8 @@ namespace Quest.ML.Clustering.Neural
                 double diff = weights[i] - input[i];
                 sum += diff * diff;
             }
-            return Math.Sqrt(sum);
+            output = Math.Sqrt(sum);
+            return output;
         }
 
         public void IncrementAge()
@@ -96,6 +104,15 @@ namespace Quest.ML.Clustering.Neural
         public void ResetActivationCounter()
         {
             ActivationCounter = 0;
+        }
+
+        public void RandomizeWeights()
+        {
+            Random rnd = new Random();
+            for (int i = 0; i <= Weights.Length; i++)
+            {
+                Weights[i] = rnd.NextDouble();
+            }
         }
 
     }
