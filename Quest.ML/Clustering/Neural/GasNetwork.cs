@@ -155,7 +155,7 @@ namespace Quest.ML.Clustering.Neural
         }
         public double Learn()
         {
-
+            throw new NotImplementedException();
         }
 
         //TODO
