@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -19,21 +20,29 @@ namespace Quest.ML.Clustering.Neural
         private int edgeMaturationAge = edgeMaturationAge;
         private int lastNeuronID = 0;
 
-        private int bmu1;
-        private int bmu2;
+        private GasNeuron? bmu1 = null;
+        private GasNeuron? bmu2 = null;
 
-        public int BMU1
+        public GasNeuron BMU1
         {
             get
             {
                 return bmu1;
-            } 
+            }
+            private set
+            {
+                bmu1 = value;
+            }
         }
-        public int BMU2
+        public GasNeuron BMU2
         {
             get
             {
-                return bmu1;
+                return bmu2;
+            }
+            private set
+            {
+                bmu2 = value;
             }
         }
 
@@ -141,30 +150,33 @@ namespace Quest.ML.Clustering.Neural
             {
                 return -1;
             }
-            SortedList<double,int> computeResult = new SortedList<double,int>();
             foreach (GasNeuron neuron in this)
             {
-                computeResult.Add(neuron.Compute(input), neuron.ID);
+                double error = neuron.Compute(input);
+                if (BMU1 == null)
+                {
+                    BMU1 = neuron;
+                }
+                else if (BMU2 == null)
+                {
+                    BMU2 = neuron;
+                }
+                else if (error < BMU1.Output)
+                {
+                    BMU2 = BMU1;
+                    BMU1 = neuron;
+                }
+                else if (error < BMU2.Output)
+                {
+                    BMU2 = neuron;
+                }
             }
-            var bestResult = computeResult.Min();
-            bmu1 = bestResult.Value;
-            double error = bestResult.Key;
-            computeResult.Remove(bmu1);
-            bmu2 = computeResult.Min().Value;
-            return error;
+            return BMU1.Output;
+
         }
         public double Learn()
         {
             throw new NotImplementedException();
         }
-
-        //TODO
-        /* Network parameters and attributes Y
-         * Constructor Y
-         * Initial network generation
-         * Compute - GET BMU, add remove and so on
-         * Update weights of neurons
-         * 
-         */
     }
 }

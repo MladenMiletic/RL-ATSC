@@ -40,6 +40,57 @@ namespace Quest.ML.UnitTests
             //Assert
             Assert.Throws<ArgumentException>(AttemptComputation);
         }
+
+
+        [Fact]
+        public void RandomizeWeights_Success()
+        {
+            //Arrange
+            GasNeuron neuron = new GasNeuron(1);
+            //Act
+            neuron.RandomizeWeights();
+            //Assert
+            Assert.Single(neuron.Weights);
+            
+        }
+        #endregion
+
+        #region GasNetworkTests
+
+        [Fact]
+        public void InitializeNetwork_Success()
+        {
+            //Arrange
+            GasNetwork net = new GasNetwork(1, 2, 10, 1, 1, 1);
+
+            //Act
+            net.InitializeNetwork();
+
+            //Assert
+            Assert.Equal(2, net.Count);
+            Assert.Single(net.Edges);
+            Assert.Equal(1, net[0].ID);
+            Assert.Equal(2, net[1].ID);
+            Assert.Contains(new GasEdge(net[0], net[1]), net.Edges);
+        }
+
+        [Theory]
+        [InlineData(new double[] {0})]
+        [InlineData(new double[] { 0, 1})]
+        [InlineData(new double[] { 0, 1, 2, 3})]
+        public void Compute_ProperInput_Success(double[] input)
+        {
+            //Arrange
+            GasNetwork net = new GasNetwork(1, input.Length, 10, 1, 1, 1);
+            net.InitializeNetwork();
+
+            //Act
+            net.Compute(input);
+
+            //Assert
+            Assert.NotEqual(net.BMU1, net.BMU2);
+
+        }
         #endregion
     }
 }

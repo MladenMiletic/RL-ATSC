@@ -109,7 +109,7 @@ namespace Quest.ML.Clustering.Neural
         public void RandomizeWeights()
         {
             Random rnd = new Random();
-            for (int i = 0; i <= Weights.Length; i++)
+            for (int i = 0; i < Weights.Length; i++)
             {
                 Weights[i] = rnd.NextDouble();
             }
