@@ -55,7 +55,7 @@ namespace Quest.ML.Clustering.Neural
             {
                 return wasMoved;
             }
-            private set
+            set
             {
                 wasMoved = value;
             }

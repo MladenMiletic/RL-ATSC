@@ -108,7 +108,7 @@ namespace Quest.ML.Clustering.Neural
         {
            return ((IEnumerable)Nodes).GetEnumerator();
         }
-        public T2 AddEdge(T1 source, T1 target)
+        public virtual T2 AddEdge(T1 source, T1 target)
         {
             if (source == null || target == null)
             {
@@ -124,7 +124,7 @@ namespace Quest.ML.Clustering.Neural
                 edges.Add(edge);
                 source.AddConnection(target);
                 target.AddConnection(source);
-                
+
             }
             return edge;
         }

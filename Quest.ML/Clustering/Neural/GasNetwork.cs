@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Quest.ML.Clustering.Neural.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,30 +20,31 @@ namespace Quest.ML.Clustering.Neural
         private int neuronNumberLimit; 
         private int edgeMaturationAge = edgeMaturationAge;
         private int lastNeuronID = 0;
+        private INeighbourhoodFunction neighbourhoodFunction = new GaussianNeighbourhoodFunction();
 
-        private GasNeuron? bmu1 = null;
-        private GasNeuron? bmu2 = null;
+        private GasNeuron? bestMatchingUnit1 = null;
+        private GasNeuron? bestMatchingUnit2 = null;
 
-        public GasNeuron BMU1
+        public GasNeuron? BestMatchingUnit1
         {
             get
             {
-                return bmu1;
+                return bestMatchingUnit1;
             }
             private set
             {
-                bmu1 = value;
+                bestMatchingUnit1 = value;
             }
         }
-        public GasNeuron BMU2
+        public GasNeuron? BestMatchingUnit2
         {
             get
             {
-                return bmu2;
+                return bestMatchingUnit2;
             }
             private set
             {
-                bmu2 = value;
+                bestMatchingUnit2 = value;
             }
         }
 
@@ -153,30 +155,121 @@ namespace Quest.ML.Clustering.Neural
             foreach (GasNeuron neuron in this)
             {
                 double error = neuron.Compute(input);
-                if (BMU1 == null)
+                if (BestMatchingUnit1 == null)
                 {
-                    BMU1 = neuron;
+                    BestMatchingUnit1 = neuron;
                 }
-                else if (BMU2 == null)
+                else if (BestMatchingUnit2 == null)
                 {
-                    BMU2 = neuron;
+                    BestMatchingUnit2 = neuron;
                 }
-                else if (error < BMU1.Output)
+                else if (error < BestMatchingUnit1.Output)
                 {
-                    BMU2 = BMU1;
-                    BMU1 = neuron;
+                    BestMatchingUnit2 = BestMatchingUnit1;
+                    BestMatchingUnit1 = neuron;
                 }
-                else if (error < BMU2.Output)
+                else if (error < BestMatchingUnit2.Output)
                 {
-                    BMU2 = neuron;
+                    BestMatchingUnit2 = neuron;
                 }
             }
-            return BMU1.Output;
-
+            if (BestMatchingUnit1 == null)
+            {
+                throw new NullReferenceException("Best matching unit can not be null!");
+            }
+            return BestMatchingUnit1.Output;
         }
-        public double Learn()
+        public override GasEdge AddEdge(GasNeuron source, GasNeuron target)
         {
-            throw new NotImplementedException();
+            GasEdge newEdge = new GasEdge(source, target);
+
+            var existingEdge = (from e in this.Edges where e.Equals(newEdge) select e).FirstOrDefault();
+
+            if (existingEdge == null)
+            {
+                return base.AddEdge(source, target);
+            }
+            existingEdge.ResetAge();
+
+            return existingEdge;
+        }
+
+        public double Learn(double[] input)
+        {
+            if (input.Length != this.InputDimensionality)
+            {
+                throw new ArgumentException("Input must have the same dimensionality as defined is network.InputDimensionality");
+            }
+            double error = Compute(input);
+            if (BestMatchingUnit1 == null || BestMatchingUnit2 == null)
+            {
+                throw new NullReferenceException("Best matching unit can not be null!");
+            }
+            if (error < NeuronConnectionDistance || this.Count >= neuronNumberLimit)
+            {
+                this.AddEdge(BestMatchingUnit1, BestMatchingUnit2);
+            }
+            else if (error < NeuronAdditionDistance)
+            {
+                //novi neuron povezan s BMU1
+                GasNeuron newNeuron = new GasNeuron(InputDimensionality);
+                this.Add(newNeuron);
+                newNeuron.SetWeights(input);
+                this.AddEdge(newNeuron, BestMatchingUnit1);
+                BestMatchingUnit1 = newNeuron;
+            }
+            else
+            {
+                //novi nepovezani neuron
+                GasNeuron newNeuron = new GasNeuron(InputDimensionality);
+                this.Add(newNeuron);
+                newNeuron.SetWeights(input);
+                BestMatchingUnit1 = newNeuron;
+            }
+
+            UpdateNetwork(new List<GasNeuron> { BestMatchingUnit1 }, 0, input);
+
+            return error;
+        }
+
+        private void UpdateNetwork(List<GasNeuron> gasNeuronsForUpdate, int distanceToBestMatchingUnit, double[] input)
+        {
+            if (gasNeuronsForUpdate.Count == 0)
+            {
+                return;
+            }
+            List<GasNeuron> neuronsForFutureUpdate = new List<GasNeuron>();
+            foreach (GasNeuron gasNeuron in gasNeuronsForUpdate)
+            {
+                UpdateNeuron(gasNeuron, distanceToBestMatchingUnit, input);
+
+                foreach (GasNeuron connectedNeuron in gasNeuron.Connections)
+                {
+                    if (!connectedNeuron.WasMoved)
+                    {
+                        neuronsForFutureUpdate.Add(connectedNeuron);
+                        connectedNeuron.WasMoved = true;
+                    }
+                }
+            }
+            UpdateNetwork(neuronsForFutureUpdate, distanceToBestMatchingUnit++, input);
+            if (distanceToBestMatchingUnit == 0)
+            {
+                foreach (GasNeuron neuron in this)
+                {
+                    neuron.WasMoved = false;
+                }
+            }
+        }
+
+        private void UpdateNeuron(GasNeuron gasNeuron, int distanceToBestMatchingUnit, double[] input)
+        {
+            double neighborhoodCoefficient = neighbourhoodFunction.Calculate(distanceToBestMatchingUnit);
+            
+            for (int i = 0; i < InputDimensionality; i++)
+            {
+                gasNeuron.Weights[i] += neighborhoodCoefficient*LearningRate*(input[i] - gasNeuron.Weights[i]);
+            }
         }
     }
 }

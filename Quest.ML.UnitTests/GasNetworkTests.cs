@@ -88,7 +88,7 @@ namespace Quest.ML.UnitTests
             net.Compute(input);
 
             //Assert
-            Assert.NotEqual(net.BMU1, net.BMU2);
+            Assert.NotEqual(net.BestMatchingUnit1, net.BestMatchingUnit2);
 
         }
         #endregion

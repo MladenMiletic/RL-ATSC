@@ -22,9 +22,10 @@ namespace Quest.ML.Clustering.Neural
             }
         }
 
-        public void ResetAge()
+        public GasEdge ResetAge()
         {
             Age = 0;
+            return this;
         }
         
     
