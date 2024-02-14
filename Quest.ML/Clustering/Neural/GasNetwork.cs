@@ -1,4 +1,5 @@
 ﻿using Quest.ML.Clustering.Neural.Interfaces;
+using Quest.ML.Clustering.Neural.NeighbourhoodFunctions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -211,25 +212,31 @@ namespace Quest.ML.Clustering.Neural
             }
             else if (error < NeuronAdditionDistance)
             {
-                //novi neuron povezan s BMU1
-                GasNeuron newNeuron = new GasNeuron(InputDimensionality);
-                this.Add(newNeuron);
-                newNeuron.SetWeights(input);
-                this.AddEdge(newNeuron, BestMatchingUnit1);
-                BestMatchingUnit1 = newNeuron;
+                AddNewNeuronConnectedWithBestMatchingUnit(input);
             }
             else
             {
-                //novi nepovezani neuron
-                GasNeuron newNeuron = new GasNeuron(InputDimensionality);
-                this.Add(newNeuron);
-                newNeuron.SetWeights(input);
-                BestMatchingUnit1 = newNeuron;
+                AddNewNeuronNotConnectedToOthers(input);
             }
-
             UpdateNetwork(new List<GasNeuron> { BestMatchingUnit1 }, 0, input);
-
             return error;
+        }
+
+        private void AddNewNeuronNotConnectedToOthers(double[] input)
+        {
+            GasNeuron newNeuron = new GasNeuron(InputDimensionality);
+            this.Add(newNeuron);
+            newNeuron.SetWeights(input);
+            BestMatchingUnit1 = newNeuron;
+        }
+
+        private void AddNewNeuronConnectedWithBestMatchingUnit(double[] input)
+        {
+            GasNeuron newNeuron = new GasNeuron(InputDimensionality);
+            this.Add(newNeuron);
+            newNeuron.SetWeights(input);
+            this.AddEdge(newNeuron, BestMatchingUnit1);
+            BestMatchingUnit1 = newNeuron;
         }
 
         private void UpdateNetwork(List<GasNeuron> gasNeuronsForUpdate, int distanceToBestMatchingUnit, double[] input)
