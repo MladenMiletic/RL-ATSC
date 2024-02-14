@@ -128,7 +128,7 @@ namespace Quest.ML.Clustering.Neural
             }
             return edge;
         }
-        public void RemoveEdge(T1 source, T1 target)
+        public virtual void RemoveEdge(T1 source, T1 target)
         {
             if (source == null || target == null)
             {
@@ -140,6 +140,14 @@ namespace Quest.ML.Clustering.Neural
                 edges.Remove(edge);
                 source.RemoveConnection(target);
                 target.RemoveConnection(source);
+                if (target.Connections.Count == 0)
+                {
+                    this.Remove(target);
+                }
+                if (source.Connections.Count == 0)
+                {
+                    this.Remove(source);
+                }
             }
             else
             {

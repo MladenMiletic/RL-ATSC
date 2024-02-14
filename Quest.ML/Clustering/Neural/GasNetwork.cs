@@ -18,10 +18,10 @@ namespace Quest.ML.Clustering.Neural
         private int neuronMaturationAge = neuronMaturationAge;
         private double neuronConnectionDistance = neuronConnectionDistance;
         private double neuronAdditionDistance = neuronAdditionDistance;
-        private int neuronNumberLimit; 
+        private int neuronNumberLimit=100; 
         private int edgeMaturationAge = edgeMaturationAge;
         private int lastNeuronID = 0;
-        private INeighbourhoodFunction neighbourhoodFunction = new GaussianNeighbourhoodFunction();
+        public INeighbourhoodFunction neighbourhoodFunction = new GaussianNeighbourhoodFunction();
 
         private GasNeuron? bestMatchingUnit1 = null;
         private GasNeuron? bestMatchingUnit2 = null;
@@ -153,6 +153,8 @@ namespace Quest.ML.Clustering.Neural
             {
                 return -1;
             }
+            BestMatchingUnit1 = null;
+            BestMatchingUnit2 = null;
             foreach (GasNeuron neuron in this)
             {
                 double error = neuron.Compute(input);
@@ -167,6 +169,7 @@ namespace Quest.ML.Clustering.Neural
                 else if (error < BestMatchingUnit1.Output)
                 {
                     BestMatchingUnit2 = BestMatchingUnit1;
+                    
                     BestMatchingUnit1 = neuron;
                 }
                 else if (error < BestMatchingUnit2.Output)
@@ -206,6 +209,7 @@ namespace Quest.ML.Clustering.Neural
             {
                 throw new NullReferenceException("Best matching unit can not be null!");
             }
+            BestMatchingUnit1.Activation(NeuronMaturationAge);
             if (error < NeuronConnectionDistance || this.Count >= neuronNumberLimit)
             {
                 this.AddEdge(BestMatchingUnit1, BestMatchingUnit2);
@@ -232,6 +236,10 @@ namespace Quest.ML.Clustering.Neural
 
         private void AddNewNeuronConnectedWithBestMatchingUnit(double[] input)
         {
+            if (BestMatchingUnit1 == null)
+            {
+                throw new NullReferenceException("Best matching unit 1 can't be null!");
+            }
             GasNeuron newNeuron = new GasNeuron(InputDimensionality);
             this.Add(newNeuron);
             newNeuron.SetWeights(input);
@@ -276,6 +284,49 @@ namespace Quest.ML.Clustering.Neural
             for (int i = 0; i < InputDimensionality; i++)
             {
                 gasNeuron.Weights[i] += neighborhoodCoefficient*LearningRate*(input[i] - gasNeuron.Weights[i]);
+            }
+        }
+
+        public void IncrementAgeEdges()
+        {
+            List<GasEdge> edgesForRemoval = new List<GasEdge>();
+            foreach (GasEdge edge in this.Edges)
+            {
+                edge.IncrementAge();
+                if (edge.Age > EdgeMaturationAge)
+                {
+                    edgesForRemoval.Add(edge);
+                }
+            }
+            foreach (GasEdge edge in edgesForRemoval)
+            {
+                this.RemoveEdge(edge.Source, edge.Target);
+            }
+        }
+        public override void RemoveEdge(GasNeuron source, GasNeuron target)
+        {
+            if (source == null || target == null)
+            {
+                throw new ArgumentNullException();
+            }
+            GasEdge edge = (GasEdge)Activator.CreateInstance(typeof(GasEdge), new object[] { source, target });
+            if (Edges.Contains(edge))
+            {
+                Edges.Remove(edge);
+                source.RemoveConnection(target);
+                target.RemoveConnection(source);
+                if (target.Connections.Count == 0 && !target.Mature)
+                {
+                    this.Remove(target);
+                }
+                if (source.Connections.Count == 0 && !source.Mature)
+                {
+                    this.Remove(source);
+                }
+            }
+            else
+            {
+                throw new Exception("Edge does not exist");
             }
         }
     }

@@ -71,6 +71,7 @@ namespace Quest.ML.UnitTests
             Assert.DoesNotContain(edge, graph.Edges);
             Assert.DoesNotContain(newNode2, newNode1.Connections);
             Assert.DoesNotContain(newNode1, newNode2.Connections);
+            Assert.Empty(graph.Nodes);
         }
 
         [Fact]

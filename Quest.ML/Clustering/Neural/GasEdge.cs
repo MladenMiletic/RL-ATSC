@@ -27,6 +27,11 @@ namespace Quest.ML.Clustering.Neural
             Age = 0;
             return this;
         }
+
+        public void IncrementAge()
+        {
+            age++;
+        }
         
     
     }

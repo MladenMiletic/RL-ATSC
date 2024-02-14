@@ -14,6 +14,19 @@ namespace Quest.ML.Clustering.Neural
         private int activationCounter = 0;
         private double output;
         private bool wasMoved = false;
+        private bool mature = false;
+
+        public bool Mature
+        {
+            get
+            {
+                return mature; 
+            }
+            set
+            {
+                mature = value;
+            }
+        }
 
         public double[] Weights
         {
@@ -43,7 +56,7 @@ namespace Quest.ML.Clustering.Neural
             {
                 return activationCounter;
             }
-            private set
+            set
             {
                 activationCounter = value;
             }
@@ -115,5 +128,14 @@ namespace Quest.ML.Clustering.Neural
             }
         }
 
+        public void Activation(int MaturationAge)
+        {
+            IncrementAge();
+            if (this.age >= MaturationAge)
+            {
+                this.Mature = true;
+            }
+            IncrementActivationCounter();
+        }
     }
 }
