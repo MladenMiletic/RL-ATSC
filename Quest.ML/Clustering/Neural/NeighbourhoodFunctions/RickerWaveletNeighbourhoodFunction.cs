@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Quest.ML.Clustering.Neural
+namespace Quest.ML.Clustering.Neural.NeighbourhoodFunctions
 {
     /// <summary>
     /// Ricker wavelet is sometimes called "Mexican hat function" which is culturaly insensitive,
@@ -32,7 +32,7 @@ namespace Quest.ML.Clustering.Neural
         public double Calculate(double distance)
         {
             double distanceSquared = distance * distance;
-            return (1- distanceSquared/NeighbourhoodWidth) *(Math.Exp(-distanceSquared / (2 * neighbourhoodWidth)));
+            return (1 - distanceSquared / NeighbourhoodWidth) * Math.Exp(-distanceSquared / (2 * neighbourhoodWidth));
         }
     }
 }

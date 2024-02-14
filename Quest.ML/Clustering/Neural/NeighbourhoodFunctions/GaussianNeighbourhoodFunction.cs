@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Quest.ML.Clustering.Neural
+namespace Quest.ML.Clustering.Neural.NeighbourhoodFunctions
 {
     public class GaussianNeighbourhoodFunction : INeighbourhoodFunction
     {
@@ -27,7 +27,7 @@ namespace Quest.ML.Clustering.Neural
 
         public double Calculate(double distance)
         {
-            return Math.Exp(-(distance * distance) / (2*neighbourhoodWidth));
+            return Math.Exp(-(distance * distance) / (2 * neighbourhoodWidth));
         }
     }
 }
