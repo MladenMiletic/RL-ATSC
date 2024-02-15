@@ -7,6 +7,7 @@ namespace BasicTesting
 {
     internal class Program
     {
+        static int folder = 0;
         static void Main()
         {
             //Inputs with 10000 random points //2-Dimensional
@@ -18,17 +19,17 @@ namespace BasicTesting
 
             List<double[]> dataList = ReadCSV(filePath);
 
-            GasNetwork network = new GasNetwork(1, 2, 10, 0.2, 0.4, 30);
-            LateralInteractionNeighbourhoodFunction neighbourhoodFunction = new LateralInteractionNeighbourhoodFunction();
+            GasNetwork network = new GasNetwork(1, 3, 50, 0.5, 1, 20);
+            GaussianNeighbourhoodFunction neighbourhoodFunction = new GaussianNeighbourhoodFunction();
             network.neighbourhoodFunction = neighbourhoodFunction;
             network.InitializeNetwork();
-
-            double[] errors = new double[100];
-            for (int i = 0; i < 100; i++)
+            network.NeuronNumberLimit = 600;
+            double[] errors = new double[1000];
+            for (int i = 0; i < 1000; i++)
             {
                 errors[i] = RunEpoch(dataList, network);
                 network.IncrementAgeEdges();
-                //neighbourhoodFunction.NeighbourhoodWidth *= 0.95;
+                neighbourhoodFunction.NeighbourhoodWidth *= 0.95;
                 network.LearningRate *= 0.95;
             }
             SaveError(errors, "error.csv");
@@ -86,6 +87,9 @@ namespace BasicTesting
             foreach (double[] data in dataList)
             {
                 error += network.Learn(data);
+                //SaveWeights(network, $"weights{folder}.csv");
+                //SaveEdges(network, $"edges{folder}.csv");
+                folder++;
             }
             return error / dataList.Count;
         }
