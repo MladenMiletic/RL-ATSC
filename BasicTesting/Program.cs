@@ -19,13 +19,13 @@ namespace BasicTesting
 
             List<double[]> dataList = ReadCSV(filePath);
 
-            GasNetwork network = new GasNetwork(1, 3, 100, 1, 2, 10);
+            GasNetwork network = new GasNetwork(1, 2, 100, 0.1, 0.2, 10);
             GaussianNeighbourhoodFunction neighbourhoodFunction = new GaussianNeighbourhoodFunction();
             network.neighbourhoodFunction = neighbourhoodFunction;
             network.InitializeNetwork();
             network.NeuronNumberLimit = 600;
             double[] errors = new double[1000];
-            for (int i = 0; i < 300; i++)
+            for (int i = 0; i < 100; i++)
             {
                 errors[i] = RunEpoch(dataList, network);
                 network.IncrementAgeEdges();
@@ -94,11 +94,11 @@ namespace BasicTesting
                 error += network.Learn(data);
                 //SaveWeights(network, $"weights{folder}.csv");
                 //SaveEdges(network, $"edges{folder}.csv");
-                if (i % 100 == 0)
+                if (i % 10 == 0)
                 {
-                  //  SaveWeights(network, $"weights{folder}.csv");
-                  //  SaveEdges(network, $"edges{folder}.csv");
-                  //  folder++;
+                    SaveWeights(network, $"weights{folder}.csv");
+                    SaveEdges(network, $"edges{folder}.csv");
+                    folder++;
                 }
                 i++;
             }
