@@ -7,7 +7,7 @@ namespace BasicTesting
 {
     internal class Program
     {
-        static int folder = 0;
+        static int folder = 1;
         static void Main()
         {
             //Inputs with 10000 random points //2-Dimensional
@@ -19,22 +19,25 @@ namespace BasicTesting
 
             List<double[]> dataList = ReadCSV(filePath);
 
-            GasNetwork network = new GasNetwork(1, 3, 50, 0.5, 1, 20);
+            GasNetwork network = new GasNetwork(1, 3, 100, 1, 2, 10);
             GaussianNeighbourhoodFunction neighbourhoodFunction = new GaussianNeighbourhoodFunction();
             network.neighbourhoodFunction = neighbourhoodFunction;
             network.InitializeNetwork();
             network.NeuronNumberLimit = 600;
             double[] errors = new double[1000];
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 300; i++)
             {
                 errors[i] = RunEpoch(dataList, network);
                 network.IncrementAgeEdges();
                 neighbourhoodFunction.NeighbourhoodWidth *= 0.95;
                 network.LearningRate *= 0.95;
+                
+                SaveError(errors, $"error{folder}.csv");
+                SaveWeights(network, $"weights{folder}.csv");
+                SaveEdges(network, $"edges{folder}.csv");
+                folder++;
+
             }
-            SaveError(errors, "error.csv");
-            SaveWeights(network, "weights.csv");
-            SaveEdges(network, "edges.csv");
 
         }
 
@@ -83,13 +86,21 @@ namespace BasicTesting
 
         private static double RunEpoch(List<double[]> dataList, GasNetwork network)
         {
+
             double error = 0;
+            int i = 0;
             foreach (double[] data in dataList)
             {
                 error += network.Learn(data);
                 //SaveWeights(network, $"weights{folder}.csv");
                 //SaveEdges(network, $"edges{folder}.csv");
-                folder++;
+                if (i % 100 == 0)
+                {
+                  //  SaveWeights(network, $"weights{folder}.csv");
+                  //  SaveEdges(network, $"edges{folder}.csv");
+                  //  folder++;
+                }
+                i++;
             }
             return error / dataList.Count;
         }

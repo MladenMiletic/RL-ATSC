@@ -164,7 +164,15 @@ namespace Quest.ML.Clustering.Neural
                 }
                 else if (BestMatchingUnit2 == null)
                 {
-                    BestMatchingUnit2 = neuron;
+                    if (error < BestMatchingUnit1.Output)
+                    {
+                        BestMatchingUnit2 = BestMatchingUnit1;
+                        BestMatchingUnit1 = neuron;
+                    }
+                    else
+                    {
+                        BestMatchingUnit2 = neuron;
+                    }
                 }
                 else if (error < BestMatchingUnit1.Output)
                 {
@@ -193,6 +201,7 @@ namespace Quest.ML.Clustering.Neural
             {
                 return base.AddEdge(source, target);
             }
+            
             existingEdge.ResetAge();
 
             return existingEdge;
@@ -315,11 +324,11 @@ namespace Quest.ML.Clustering.Neural
                 Edges.Remove(edge);
                 source.RemoveConnection(target);
                 target.RemoveConnection(source);
-                if (target.Connections.Count == 0 && !target.Mature)
+                if (target.Connections.Count == 0)
                 {
                     this.Remove(target);
                 }
-                if (source.Connections.Count == 0 && !source.Mature)
+                if (source.Connections.Count == 0)
                 {
                     this.Remove(source);
                 }
