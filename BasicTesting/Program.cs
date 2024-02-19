@@ -107,7 +107,7 @@ namespace BasicTesting
 
         static List<double[]> ReadCSV(string filePath)
         {
-            List<double[]> dataList = new List<double[]>();
+            List<double[]> dataList = [];
 
             try
             {
