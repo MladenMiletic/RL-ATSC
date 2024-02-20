@@ -83,7 +83,7 @@ namespace Quest.ML.Clustering.Neural
             Nodes.Insert(index, item);
         }
 
-        public bool Remove(T1 item)
+        public virtual bool Remove(T1 item)
         {
             if (!this.Contains(item))
             {

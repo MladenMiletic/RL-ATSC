@@ -8,7 +8,7 @@ namespace BasicTesting
     internal class Program
     {
         static int folder = 1;
-        static void Main()
+        public static void Main()
         {
             //Inputs with 10000 random points //2-Dimensional
             //Run several GNG epochs, track avg error
@@ -20,6 +20,8 @@ namespace BasicTesting
             List<double[]> dataList = ReadCSV(filePath);
 
             GasNetwork network = new GasNetwork(1, 2, 100, 0.1, 0.2, 10);
+            network.NeuronAdded += HandleNeuronAddition;
+            network.NeuronDeleted += HandleNeuronDeletion;
             GaussianNeighbourhoodFunction neighbourhoodFunction = new GaussianNeighbourhoodFunction();
             network.neighbourhoodFunction = neighbourhoodFunction;
             network.InitializeNetwork();
@@ -38,7 +40,11 @@ namespace BasicTesting
                 folder++;
 
             }
+        }
 
+        private static void Network_NeuronAdded(object? sender, GasNeuron e)
+        {
+            throw new NotImplementedException();
         }
 
         private static void SaveEdges(GasNetwork network, string filePath)
@@ -149,6 +155,15 @@ namespace BasicTesting
                 Console.WriteLine("An error occurred while writing the CSV file:");
                 Console.WriteLine(e.Message);
             }
+        }
+
+        private static void HandleNeuronAddition(object? sender, GasNeuron addedNeuron)
+        {
+            Console.WriteLine($"ADD: NEURON ID: {addedNeuron.ID}");
+        }
+        private static void HandleNeuronDeletion(object? sender, GasNeuron deletedNeuron)
+        {
+            Console.WriteLine($"REMOVE: NEURON ID: {deletedNeuron.ID}");
         }
 
     }

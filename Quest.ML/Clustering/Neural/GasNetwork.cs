@@ -26,6 +26,9 @@ namespace Quest.ML.Clustering.Neural
         private GasNeuron? bestMatchingUnit1 = null;
         private GasNeuron? bestMatchingUnit2 = null;
 
+        public event EventHandler<GasNeuron>? NeuronAdded;
+        public event EventHandler<GasNeuron>? NeuronDeleted;
+
         public GasNeuron? BestMatchingUnit1
         {
             get
@@ -144,6 +147,17 @@ namespace Quest.ML.Clustering.Neural
         {
             item.ID = ++lastNeuronID;
             base.Add(item);
+            OnNeuronAddition(item);
+        }
+
+        public override bool Remove(GasNeuron item)
+        {
+            bool RemoveResult = base.Remove(item);
+            if (RemoveResult)
+            {
+                OnNeuronDeletion(item);
+            }
+            return RemoveResult;
         }
 
 
@@ -337,6 +351,16 @@ namespace Quest.ML.Clustering.Neural
             {
                 throw new Exception("Edge does not exist");
             }
+        }
+
+        public virtual void OnNeuronDeletion(GasNeuron deletedNeuron)
+        {
+            NeuronDeleted?.Invoke(this, deletedNeuron);
+        }
+
+        public virtual void OnNeuronAddition(GasNeuron addedNeuron)
+        {
+            NeuronAdded?.Invoke(this, addedNeuron);
         }
     }
 }
