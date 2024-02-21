@@ -1,12 +1,27 @@
-﻿namespace VissimEnvironment
+﻿namespace VissimEnv
 {
+    /// <summary>
+    /// The purpose of this class is to wrap Vissim simulator in a simple way to make it easier to
+    /// work with. Functionalities will be addded as required.
+    /// </summary>
     public class VissimEnvironment
     {
-        Vissim simulator;
+        private IVissim simulator;
 
-        public VissimEnvironment(Vissim simulator)
+        public VissimEnvironment()
         {
-            this.simulator = simulator;
+            simulator = new Vissim();
         }
+
+        public void LoadNetwork(string path)
+        {
+            simulator.LoadNet(path);
+        }
+
+        public void RunSimulationStep()
+        {
+            simulator.Simulation.RunSingleStep();
+        }
+        
     }
 }
