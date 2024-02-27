@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace Quest.ML.Clustering.Neural
 {
-    public class GasNetwork(double learningRate, int inputDimensionality, int neuronMaturationAge, double neuronConnectionDistance, double neuronAdditionDistance, int edgeMaturationAge) : Graph<GasNeuron, GasEdge>
+    public class GasNetwork : Graph<GasNeuron, GasEdge>
     {
 
-        private double learningRate = learningRate;
-        private int inputDimensionality = inputDimensionality;
-        private int neuronMaturationAge = neuronMaturationAge;
-        private double neuronConnectionDistance = neuronConnectionDistance;
-        private double neuronAdditionDistance = neuronAdditionDistance;
+        private double learningRate;
+        private int inputDimensionality;
+        private int neuronMaturationAge;
+        private double neuronConnectionDistance;
+        private double neuronAdditionDistance;
         private int neuronNumberLimit=100; 
-        private int edgeMaturationAge = edgeMaturationAge;
+        private int edgeMaturationAge;
         private int lastNeuronID = 0;
         public INeighbourhoodFunction neighbourhoodFunction = new GaussianNeighbourhoodFunction();
 
@@ -28,6 +28,27 @@ namespace Quest.ML.Clustering.Neural
 
         public event EventHandler<GasNeuron>? NeuronAdded;
         public event EventHandler<GasNeuron>? NeuronDeleted;
+
+        public GasNetwork(double learningRate, int inputDimensionality, int neuronMaturationAge, double neuronConnectionDistance, double neuronAdditionDistance, int edgeMaturationAge)
+        {
+            this.learningRate = learningRate;
+            this.inputDimensionality = inputDimensionality;
+            this.neuronMaturationAge = neuronMaturationAge;
+            this.neuronConnectionDistance = neuronConnectionDistance;
+            this.neuronAdditionDistance = neuronAdditionDistance;
+            this.edgeMaturationAge = edgeMaturationAge;
+        }
+
+        public GasNetwork(GasNetworkParameters parameters)
+        {
+            this.learningRate = parameters.LearningRate;
+            this.inputDimensionality = parameters.InputDimensionality;
+            this.neuronMaturationAge = parameters.NeuronMaturationAge;
+            this.neuronConnectionDistance = parameters.NeuronConnectionDistance;
+            this.neuronAdditionDistance = parameters.NeuronAdditionDistance;
+            this.edgeMaturationAge = parameters.EdgeMaturationAge;
+            this.neighbourhoodFunction = parameters.neighbourhoodFunction;
+        }
 
         public GasNeuron? BestMatchingUnit1
         {

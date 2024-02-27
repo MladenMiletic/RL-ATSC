@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Quest.ML.ReinforcementLearning.SelectionPolicies
 {
-    public class EpsilonGreedySelectionPolicy(double epsilon) : ISelectionPolicy
+    public class EpsilonGreedySelectionPolicy : ISelectionPolicy
     {
-        private double epsilon = epsilon;
+        private double epsilon = 1;
         private readonly Random random = new();
 
         public double Epsilon

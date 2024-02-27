@@ -48,6 +48,19 @@ namespace Quest.ML.ReinforcementLearning
             ActivationCounters = [];
             gasNetworkStateIdentifier.InitializeNetwork();
         }
+        public GasQAgent(GasQAgentParameters parameters)
+        {
+            this.numberOfActions = parameters.numberOfActions;
+            this.gasNetworkStateIdentifier = parameters.gasNetworkStateIdentifier;
+            this.selectionPolicy = parameters.SelectionPolicy;
+            this.learningRateAlpha = parameters.LearningRateAlpha;
+            this.discountFactorGamma = parameters.DiscountFactorGamma;
+            gasNetworkStateIdentifier.NeuronAdded += HandleNeuronAddition;
+            gasNetworkStateIdentifier.NeuronDeleted += HandleNeuronDeletion;
+            QTable = [];
+            ActivationCounters = [];
+            gasNetworkStateIdentifier.InitializeNetwork();
+        }
 
         public int GetStateId(double[] inputs)
         {
