@@ -11,8 +11,8 @@ namespace VissimEnv
         private readonly IVissim simulator;
         private List<ILane> lanes = [];
 
-        private double[] cavsScalingFactor;
-        private double[] maxCavsPerLane;
+        private double[] cavsScalingFactor = [];
+        private double[] maxCavsPerLane = [];
         private readonly object[] Attributes_veh = ["No", "VehType"];
 
         public VissimEnvironment()
