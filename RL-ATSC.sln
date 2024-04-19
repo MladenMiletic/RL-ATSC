@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BasicTesting", "BasicTestin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Quest.ML.UnitTests", "Quest.ML.UnitTests\Quest.ML.UnitTests.csproj", "{115BB41E-4504-4E8F-9784-3E1F401BF958}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VissimEnv", "VissimEnvironment\VissimEnv.csproj", "{31101E03-B2CB-4104-9D3D-3A402FF9EEA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VissimEnv", "VissimEnvironment\VissimEnv.csproj", "{31101E03-B2CB-4104-9D3D-3A402FF9EEA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ATSC", "ATSC\ATSC.csproj", "{CAB4C6F9-06C3-4948-960F-3B7D1690D15E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ATSC", "ATSC\ATSC.csproj", "{CAB4C6F9-06C3-4948-960F-3B7D1690D15E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MOBDOK", "MOBDOK\MOBDOK.csproj", "{CB3AA49D-99BE-481A-8406-29D8A06707EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{CAB4C6F9-06C3-4948-960F-3B7D1690D15E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAB4C6F9-06C3-4948-960F-3B7D1690D15E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAB4C6F9-06C3-4948-960F-3B7D1690D15E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB3AA49D-99BE-481A-8406-29D8A06707EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB3AA49D-99BE-481A-8406-29D8A06707EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB3AA49D-99BE-481A-8406-29D8A06707EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB3AA49D-99BE-481A-8406-29D8A06707EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

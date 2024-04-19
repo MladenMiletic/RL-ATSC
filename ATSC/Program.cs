@@ -19,12 +19,12 @@ namespace ATSC
         private static readonly int simulationDuration = 59400;
         private static readonly int agentTimeStep = 300;
         
-        public static void Main(string[] args)
+        public static void Main()
         {
-            GasNetworkParameters gasNetworkParameters = new GasNetworkParameters();
-            GasNetwork gasNetwork = new GasNetwork(gasNetworkParameters);
+            GasNetworkParameters gasNetworkParameters = new();
+            GasNetwork gasNetwork = new(gasNetworkParameters);
             ISelectionPolicy selectionPolicy = new EpsilonGreedySelectionPolicy();
-            GasQAgentParameters gasQAgentParameters = new GasQAgentParameters(4, gasNetwork, selectionPolicy);
+            GasQAgentParameters gasQAgentParameters = new(4, gasNetwork, selectionPolicy);
 
             Agent = new GasQAgent(gasQAgentParameters);
             Environment = new VissimEnvironment();
@@ -39,7 +39,10 @@ namespace ATSC
                 //DO SOMETHING WITH RESULTS
             }
         }
-
+        /// <summary>
+        /// this will perform one learning simulation
+        /// </summary>
+        /// <exception cref="NullReferenceException">Agent and the environment must not be null</exception>
         private static void PerformLearningSimulation()
         {
             

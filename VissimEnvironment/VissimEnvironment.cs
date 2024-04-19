@@ -13,7 +13,7 @@ namespace VissimEnv
 
         private double[] cavsScalingFactor = [];
         private double[] maxCavsPerLane = [];
-        private readonly object[] Attributes_veh = ["No", "VehType"];
+        private readonly object[] Attributes_veh = ["No", "VehType", "VehRoutSta"];
 
         public VissimEnvironment()
         {
@@ -42,6 +42,34 @@ namespace VissimEnv
         public void RunSimulationStep()
         {
             simulator.Simulation.RunSingleStep();
+        }
+
+        public void UseMaxSpeed()
+        {
+            simulator.SuspendUpdateGUI();
+            simulator.Simulation.set_AttValue("UseMaxSimSpeed", true);
+            simulator.Graphics.CurrentNetworkWindow.set_AttValue("QuickMode", 1);
+        }
+
+
+        public int[] GetVehicleRouteRequests(int numberOfStaticRouteDecisions)
+        {
+            int[] vehicleRouteRequests = new int[numberOfStaticRouteDecisions];
+
+            IVehicleContainer vehicles = simulator.Net.Vehicles;
+
+            foreach (IVehicle vehicle in vehicles)
+            {
+                //var x = vehicle.VehRoutSta.get_AttValue("No");
+                string y = vehicle.get_AttValue("VehRoutSta");
+                if (y == null)
+                    continue;
+                int index = Convert.ToInt32(y.Remove(y.Length - 2));
+                vehicleRouteRequests[index-1]++;
+
+                
+            }
+            return vehicleRouteRequests;
         }
 
         public double[] GetLaneStateInfo()
@@ -95,6 +123,16 @@ namespace VissimEnv
         public void PerformAction(int actionId)
         {
             throw new NotImplementedException();
+        }
+
+        public int GetSimulationDuration()
+        {
+            return simulator.Simulation.get_AttValue("SimPeriod");
+        }
+
+        public int GetSimulationResolution()
+        {
+            return simulator.Simulation.get_AttValue("SimRes");
         }
     }
 }
