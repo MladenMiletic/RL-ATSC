@@ -74,7 +74,7 @@ namespace ATSC
                 StateList.Add(Environment.GetLaneStateInfo());
                 int stateId = Agent.GetStateId(StateList.Last());
                 int actionId = Agent.SelectAction(stateId);
-                Environment.PerformAction(actionId);
+                Environment.PerformAction(0,actionId);
                 if (!firstAction)
                 {
                     double delayAfterAction = Environment.GetAverageDelayOfLastTimeStep();

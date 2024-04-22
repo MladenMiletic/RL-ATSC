@@ -38,7 +38,7 @@ namespace Quest.ML.ReinforcementLearning.SelectionPolicies
             double generatedValue = random.NextDouble();
             if (generatedValue < epsilon) //Explore
             {
-                return random.Next(0, QValues.Length-1);
+                return random.Next(0, QValues.Length);
             }
             else //Exploit
             {

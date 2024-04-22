@@ -64,7 +64,7 @@ namespace Quest.ML.ReinforcementLearning
 
         public int GetStateId(double[] inputs)
         {
-            gasNetworkStateIdentifier.Compute(inputs);
+            gasNetworkStateIdentifier.Learn(inputs); //HERE I DID MASSIVE CHANGE
             if (gasNetworkStateIdentifier.BestMatchingUnit1 == null)
             {
                 throw new Exception("Failed to Compute best matching unit!");

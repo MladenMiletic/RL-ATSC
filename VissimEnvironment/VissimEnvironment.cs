@@ -10,6 +10,7 @@ namespace VissimEnv
     {
         private readonly IVissim simulator;
         private List<ILane> lanes = [];
+        private ISignalControllerContainer signalControllers;
 
         private double[] cavsScalingFactor = [];
         private double[] maxCavsPerLane = [];
@@ -18,6 +19,7 @@ namespace VissimEnv
         public VissimEnvironment()
         {
             simulator = new Vissim();
+            simulator.set_AttValue("MaxNumberOfCOMRefs", "");
         }
 
         public void LoadNetwork(string path)
@@ -37,29 +39,44 @@ namespace VissimEnv
             }
             cavsScalingFactor = new double[lanes.Count];
             maxCavsPerLane = new double[lanes.Count];
+            signalControllers = simulator.Net.SignalControllers;
         }
 
         public void RunSimulationStep()
         {
             simulator.Simulation.RunSingleStep();
         }
+        public void RunSimulationContinuous()
+        {
+            simulator.Simulation.RunContinuous();
+        }
+        public void RunSimulationContinuousWithBreak(int breakTime)
+        {
+            simulator.Simulation.set_AttValue("SimBreakAt", breakTime);
+            RunSimulationContinuous();
+        }
 
         public void UseMaxSpeed()
         {
-            simulator.SuspendUpdateGUI();
+            //simulator.SuspendUpdateGUI();
             simulator.Simulation.set_AttValue("UseMaxSimSpeed", true);
             simulator.Graphics.CurrentNetworkWindow.set_AttValue("QuickMode", 1);
         }
 
 
-        public int[] GetVehicleRouteRequests(int numberOfStaticRouteDecisions)
+        public double[] GetVehicleRouteRequests(int numberOfStaticRouteDecisions)
         {
-            int[] vehicleRouteRequests = new int[numberOfStaticRouteDecisions];
+            double[] vehicleRouteRequests = new double[numberOfStaticRouteDecisions];
 
             IVehicleContainer vehicles = simulator.Net.Vehicles;
 
             foreach (IVehicle vehicle in vehicles)
             {
+                if (vehicle == null)
+                {
+                    Console.WriteLine("Vehicle null!");
+                    continue;
+                }
                 //var x = vehicle.VehRoutSta.get_AttValue("No");
                 string y = vehicle.get_AttValue("VehRoutSta");
                 if (y == null)
@@ -114,15 +131,38 @@ namespace VissimEnv
 
         public void InitializeSimulation(int initTime)
         {
-            for (int i = 0; i < initTime; i++)
-            {
-                RunSimulationStep();
-            }
+            RunSimulationContinuousWithBreak(initTime);
         }
 
-        public void PerformAction(int actionId)
+        public void PerformAction(int agentID, int actionId)
         {
-            throw new NotImplementedException();
+            ISignalController controller = signalControllers.get_ItemByKey(agentID+1);
+            
+            ISignalGroup sg1 = controller.SGs.GetAll()[0];
+            ISignalGroup sg2 = controller.SGs.GetAll()[1];
+            switch (actionId)
+            {
+                case 0:
+                    sg1.set_AttValue("EndGreen", 26);
+                    sg2.set_AttValue("EndRed", 30);
+                    break;
+                case 1:
+                    sg1.set_AttValue("EndGreen", 21);
+                    sg2.set_AttValue("EndRed", 25);
+                    break;
+                case 2:
+                    sg1.set_AttValue("EndGreen", 16);
+                    sg2.set_AttValue("EndRed", 20);
+                    break;
+                case 3:
+                    sg1.set_AttValue("EndGreen", 31);
+                    sg2.set_AttValue("EndRed", 35);
+                    break;
+                case 4:
+                    sg1.set_AttValue("EndGreen", 36);
+                    sg2.set_AttValue("EndRed", 40);
+                    break;
+            }  
         }
 
         public int GetSimulationDuration()
