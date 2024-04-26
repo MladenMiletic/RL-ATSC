@@ -1,4 +1,5 @@
 ﻿using Quest.ML.Clustering.Neural;
+using Quest.ML.Extensions;
 using Quest.ML.ReinforcementLearning.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,9 @@ namespace Quest.ML.ReinforcementLearning
 
         public readonly SortedDictionary<int, double[]> QTable;
         public readonly SortedDictionary<int, int[]> ActivationCounters;
+
+        public List<double[]> GNGinputs = new();
+        public double GNGerror;
 
         public ISelectionPolicy SelectionPolicy
         {
@@ -64,7 +68,8 @@ namespace Quest.ML.ReinforcementLearning
 
         public int GetStateId(double[] inputs)
         {
-            gasNetworkStateIdentifier.Learn(inputs); //HERE I DID MASSIVE CHANGE
+            GNGinputs.Add(inputs);
+            gasNetworkStateIdentifier.Compute(inputs); //HERE I DID MASSIVE CHANGE
             if (gasNetworkStateIdentifier.BestMatchingUnit1 == null)
             {
                 throw new Exception("Failed to Compute best matching unit!");
@@ -72,10 +77,24 @@ namespace Quest.ML.ReinforcementLearning
             return gasNetworkStateIdentifier.BestMatchingUnit1.ID;
         }
 
+        public double RunGNGTrainingEpoch()
+        {
+            double error = 0;
+            GNGinputs.Shuffle();
+            foreach (var input in GNGinputs)
+            {
+                error += gasNetworkStateIdentifier.Learn(input);
+            }
+            GNGinputs.Clear();
+            GNGerror = error;
+            return error;
+        }
+
         public void Learn(int previousStateId, int actionId, int currentStateId,double reward)
         {
             QTable[previousStateId][actionId] = QTable[previousStateId][actionId] + learningRateAlpha * (reward + discountFactorGamma * QTable[currentStateId].Max() - QTable[previousStateId][actionId]);
         }
+        
 
         public int SelectAction(int stateID)
         {

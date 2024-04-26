@@ -62,7 +62,66 @@ namespace VissimEnv
             simulator.Simulation.set_AttValue("UseMaxSimSpeed", true);
             simulator.Graphics.CurrentNetworkWindow.set_AttValue("QuickMode", 1);
         }
-
+        public double[] GetAverageNodeQueue()
+        {
+            double[] finalQueues = new double[36];
+            int finalCounter = 0;
+            foreach (INode node in simulator.Net.Nodes)
+            {
+                double[] nodequeues = new double[13];
+                int i = 0;
+                foreach (IMovement movement in node.Movements)
+                {
+                    nodequeues[i] = movement.get_AttValue("Qlen(Current,Last)");
+                    i++;
+                }
+                int j = 0;
+                double sum = 0;
+                foreach (double q in nodequeues)
+                {
+                    sum += q;
+                    j++;
+                    if (j % 3 == 0)
+                    {
+                        finalQueues[finalCounter] = sum / 3.0;
+                        finalCounter++;
+                        sum = 0;
+                        j = 0;
+                    }
+                }
+            }
+            return finalQueues;
+        }
+        public double[] GetDelaysFromNodes()
+        {
+            double[] delays = new double[9];
+            int i = 0;
+            foreach (INode node in simulator.Net.Nodes)
+            {
+                IMovement movement = node.TotRes;
+                double? x = movement.get_AttValue("VehDelay(Current,Last,All)");
+                if (x == null)
+                    x = 0;
+                delays[i] = (double)x;
+                i++;
+            }
+            return delays;
+        }
+        public double[] GetTotalDelaysFromNodes()
+        {
+            double[] delays = new double[9];
+            int i = 0;
+            foreach (INode node in simulator.Net.Nodes)
+            {
+                IMovement movement = node.TotRes;
+                double? x = movement.get_AttValue("VehDelay(Current,Total,All)");
+                if (x == null)
+                    x = 0;
+                delays[i] = (double)x;
+                i++;
+            }
+            return delays;
+        }
 
         public double[] GetVehicleRouteRequests(int numberOfStaticRouteDecisions)
         {
@@ -118,7 +177,7 @@ namespace VissimEnv
         }
         public double GetAverageDelay()
         {
-            return (double)simulator.Net.VehicleNetworkPerformanceMeasurement.get_AttValue("DelayAvg(Current, Average, All)");
+            return (double)simulator.Net.VehicleNetworkPerformanceMeasurement.get_AttValue("DelayAvg(Current, Total, All)");
         }
         public int GetTotalNumberOfStops()
         {

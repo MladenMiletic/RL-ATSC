@@ -359,11 +359,11 @@ namespace Quest.ML.Clustering.Neural
                 Edges.Remove(edge);
                 source.RemoveConnection(target);
                 target.RemoveConnection(source);
-                if (target.Connections.Count == 0)
+                if (target.Connections.Count == 0 && !target.Mature)
                 {
                     this.Remove(target);
                 }
-                if (source.Connections.Count == 0)
+                if (source.Connections.Count == 0 && !source.Mature)
                 {
                     this.Remove(source);
                 }

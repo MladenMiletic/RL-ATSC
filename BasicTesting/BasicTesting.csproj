@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Quest.ML\Quest.ML.csproj" />
+    <ProjectReference Include="..\VissimEnvironment\VissimEnv.csproj" />
   </ItemGroup>
 
 </Project>
