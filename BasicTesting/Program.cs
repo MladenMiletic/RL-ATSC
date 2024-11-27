@@ -1,9 +1,6 @@
 ﻿using Quest.ML.Clustering.Neural;
 using Quest.ML.Clustering.Neural.NeighbourhoodFunctions;
-using Quest.ML.ReinforcementLearning.Interfaces;
-using Quest.ML.ReinforcementLearning.SelectionPolicies;
 using System.Diagnostics;
-using VissimEnv;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BasicTesting
@@ -13,21 +10,34 @@ namespace BasicTesting
         static int folder = 1;
         public static void Main()
         {
-            VissimEnvironment env = new VissimEnvironment();
-            Random rand = new Random();
-            env.LoadNetwork("\"C:\\Users\\mmiletic\\Desktop\\Mobility\\model3by3.inpx\"");
+            //Inputs with 10000 random points //2-Dimensional
+            //Run several GNG epochs, track avg error
+            //Export error per epoch
+            //Export neuron weights
+            string filePath = "synDataForTest.csv"; // Specify the path to your CSV file
+            List<double[]> dataList = ReadCSV(filePath);
+            GasNetwork network = new GasNetwork(1, 2, 50, 1, 3, 2);
+            network.NeuronAdded += HandleNeuronAddition;
+            network.NeuronDeleted += HandleNeuronDeletion;
+            GaussianNeighbourhoodFunction neighbourhoodFunction = new GaussianNeighbourhoodFunction();
+            network.neighbourhoodFunction = neighbourhoodFunction;
+            network.InitializeNetwork();
+            network.NeuronNumberLimit = 9;
+            double[] errors = new double[1000];
+            for (int i = 0; i < 100; i++)
+            {
+                SaveWeights(network, $"weights{folder}.csv");
+                SaveEdges(network, $"edges{folder}.csv");
+                folder++;
+                errors[i] = RunEpoch(dataList, network);
+                network.IncrementAgeEdges();
+                neighbourhoodFunction.NeighbourhoodWidth *= 0.7;
+                network.LearningRate *= 0.7;
 
-            int numberOfRouteDecisions = 36;
-            int simRes = env.GetSimulationResolution();
-            int initTime = 300;
-            int simDuration = env.GetSimulationDuration();
-            int controlTimeStep = 60 * simRes;
-            int numEpochs = 500;
-            env.UseMaxSpeed();
-            env.InitializeSimulation(initTime);
-
-            double[] q = env.GetDelaysFromNodes();
-            Console.ReadKey();
+                SaveError(errors, $"error{i}.csv");
+                
+                
+            }
         }
 
         private static void Network_NeuronAdded(object? sender, GasNeuron e)

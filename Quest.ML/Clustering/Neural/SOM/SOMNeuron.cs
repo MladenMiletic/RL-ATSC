@@ -1,32 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Quest.ML.Clustering.Neural
+namespace Quest.ML.Clustering.Neural.SOM
 {
-    public class GasNeuron(int inputDimensionality) : Node(-1)
+    public class SOMNeuron(int inputDimensionality) : Node(-1)
     {
         private double[] weights = new double[inputDimensionality];
-        private int age = 0;
         private int activationCounter = 0;
         private double output;
         private bool wasMoved = false;
-        private bool mature = false;
-
-        public bool Mature
-        {
-            get
-            {
-                return mature; 
-            }
-            set
-            {
-                mature = value;
-            }
-        }
 
         public double[] Weights
         {
@@ -37,17 +22,6 @@ namespace Quest.ML.Clustering.Neural
             private set
             {
                 weights = value;
-            }
-        }
-        public int Age
-        {
-            get
-            {
-                return age;
-            }
-            private set
-            {
-                age = value;
             }
         }
         public int ActivationCounter
@@ -61,7 +35,6 @@ namespace Quest.ML.Clustering.Neural
                 activationCounter = value;
             }
         }
-
         public bool WasMoved
         {
             get
@@ -80,6 +53,7 @@ namespace Quest.ML.Clustering.Neural
                 return output;
             }
         }
+
         public void SetWeights(double[] weights)
         {
             Weights = new double[weights.Length];
@@ -101,15 +75,6 @@ namespace Quest.ML.Clustering.Neural
             output = Math.Sqrt(sum);
             return output;
         }
-
-        public void IncrementAge()
-        {
-            Age++;
-        }
-        public void ResetAge()
-        {
-            Age = 0; 
-        }
         public void IncrementActivationCounter()
         {
             ActivationCounter++;
@@ -124,18 +89,9 @@ namespace Quest.ML.Clustering.Neural
             Random rnd = new Random();
             for (int i = 0; i < Weights.Length; i++)
             {
-                Weights[i] = rnd.NextDouble()*8 - 6;
+                Weights[i] = rnd.NextDouble() * 20;
             }
         }
 
-        public void Activation(int MaturationAge)
-        {
-            IncrementAge();
-            if (this.age >= MaturationAge)
-            {
-                this.Mature = true;
-            }
-            IncrementActivationCounter();
-        }
     }
 }

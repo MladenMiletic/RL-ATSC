@@ -107,6 +107,21 @@ namespace VissimEnv
             }
             return delays;
         }
+        public double[] GetVehsFromNodes()
+        {
+            double[] delays = new double[9];
+            int i = 0;
+            foreach (INode node in simulator.Net.Nodes)
+            {
+                IMovement movement = node.TotRes;
+                double? x = movement.get_AttValue("Vehs(Current,Last,All)");
+                if (x == null)
+                    x = 0;
+                delays[i] = (double)x;
+                i++;
+            }
+            return delays;
+        }
         public double[] GetTotalDelaysFromNodes()
         {
             double[] delays = new double[9];

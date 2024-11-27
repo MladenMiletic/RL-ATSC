@@ -50,7 +50,7 @@ namespace Quest.ML.ReinforcementLearning
             gasNetworkStateIdentifier.NeuronDeleted += HandleNeuronDeletion;
             QTable = [];
             ActivationCounters = [];
-            gasNetworkStateIdentifier.InitializeNetwork();
+            //gasNetworkStateIdentifier.InitializeNetwork();
         }
         public GasQAgent(GasQAgentParameters parameters)
         {
