@@ -118,6 +118,7 @@ namespace Quest.ML.Clustering.Neural.SOM
         }
         private void UpdateNetwork(List<SOMNeuron> somNeuronsForUpdate, int distanceToBestMatchingUnit, double[] input)
         {
+
             if (somNeuronsForUpdate.Count == 0)
             {
                 return;
@@ -125,8 +126,9 @@ namespace Quest.ML.Clustering.Neural.SOM
             List<SOMNeuron> neuronsForFutureUpdate = new List<SOMNeuron>();
             foreach (SOMNeuron somNeuron in somNeuronsForUpdate)
             {
-                UpdateNeuron(somNeuron, distanceToBestMatchingUnit, input);
 
+                UpdateNeuron(somNeuron, distanceToBestMatchingUnit, input);
+                somNeuron.WasMoved = true;
                 foreach (SOMNeuron connectedNeuron in somNeuron.Connections)
                 {
                     if (!connectedNeuron.WasMoved)
@@ -136,7 +138,7 @@ namespace Quest.ML.Clustering.Neural.SOM
                     }
                 }
             }
-            UpdateNetwork(neuronsForFutureUpdate, ++distanceToBestMatchingUnit, input);
+            UpdateNetwork(neuronsForFutureUpdate, distanceToBestMatchingUnit+1, input);
             if (distanceToBestMatchingUnit == 0)
             {
                 foreach (SOMNeuron neuron in this)
@@ -149,6 +151,7 @@ namespace Quest.ML.Clustering.Neural.SOM
         private void UpdateNeuron(SOMNeuron somNeuron, int distanceToBestMatchingUnit, double[] input)
         {
             double neighborhoodCoefficient = neighbourhoodFunction.Calculate(distanceToBestMatchingUnit);
+
             if (somNeuron.ActivationCounter == 0)
             {
                 //for (int i = 0; i < InputDimensionality; i++)
@@ -159,7 +162,7 @@ namespace Quest.ML.Clustering.Neural.SOM
             }
             for (int i = 0; i < InputDimensionality; i++)
             {
-                somNeuron.Weights[i] += neighborhoodCoefficient * (1/(double) somNeuron.ActivationCounter) * (input[i] - somNeuron.Weights[i]);
+                somNeuron.Weights[i] += neighborhoodCoefficient * (1/((double) somNeuron.ActivationCounter)) * (input[i] - somNeuron.Weights[i]);
             }
         }
         public void AppendRMSE(string filePath, double rmse)
@@ -179,6 +182,17 @@ namespace Quest.ML.Clustering.Neural.SOM
             }
             double mse = sumSqErrors / dataList.Count;
             return Math.Sqrt(mse);
+        }
+
+        public int[] GetLabels(List<double[]> dataList)
+        {
+            int[] labels = new int[dataList.Count];
+            for (int i = 0; i < labels.Length; i++)
+            {
+                this.Compute(dataList[i]);
+                labels[i] = this.BMU.ID;
+            }
+            return labels;
         }
     }
 }

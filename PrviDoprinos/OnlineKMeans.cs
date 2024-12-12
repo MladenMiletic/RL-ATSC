@@ -42,6 +42,7 @@
                 {
                     centroids[cluster][d] = (1 - learningRate) * centroids[cluster][d] + learningRate * data[i][d];
                 }
+                AppendRMSE("RMSEonlinekmeans.csv", CalculateRMSE(data, labels, centroids));
             }
         }
 

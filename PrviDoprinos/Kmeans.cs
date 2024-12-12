@@ -83,6 +83,7 @@ class KMeans
             // Check if centroids have changed
             hasConverged = hasConverged && centroids.Zip(newCentroids, EuclideanDistance).All(d => d < 1e-6);
             centroids = newCentroids;
+            AppendRMSE("RMSEkmeans.csv", CalculateRMSE(data, labels, centroids));
         }
 
         return (labels, centroids);
@@ -95,11 +96,19 @@ class KMeans
 
     public static void SaveLabels(string filePath, int[] labels)
     {
-        using (StreamWriter writer = new StreamWriter(filePath))
+        using (StreamWriter writer = new StreamWriter(filePath,true))
         {
             for (int i = 0; i < labels.Length; i++)
             {
-                writer.WriteLine($"{labels[i]}"); // Format: index,label
+                writer.Write($"{labels[i]}"); // Format: index,label
+                if (i < labels.Length - 1)
+                {
+                    writer.Write(",");
+                }
+                else
+                {
+                    writer.WriteLine();
+                }
             }
         }
     }

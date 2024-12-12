@@ -10,8 +10,8 @@
     <COMReference Include="VISSIMLIB">
       <WrapperTool>tlbimp</WrapperTool>
       <VersionMinor>0</VersionMinor>
-      <VersionMajor>24</VersionMajor>
-      <Guid>7d2505d1-42cd-4fb8-a298-14725edc3226</Guid>
+      <VersionMajor>25</VersionMajor>
+      <Guid>d8e825b2-ddfa-442d-b948-7582a54c327d</Guid>
       <Lcid>0</Lcid>
       <Isolated>false</Isolated>
       <EmbedInteropTypes>true</EmbedInteropTypes>

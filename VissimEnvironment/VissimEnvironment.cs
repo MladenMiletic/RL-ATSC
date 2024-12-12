@@ -10,16 +10,22 @@ namespace VissimEnv
     {
         private readonly IVissim simulator;
         private List<ILane> lanes = [];
+        private List<ILink> links = [];
         private ISignalControllerContainer signalControllers;
 
         private double[] cavsScalingFactor = [];
         private double[] maxCavsPerLane = [];
         private readonly object[] Attributes_veh = ["No", "VehType", "VehRoutSta"];
 
+        private List<ILink> NorthLinks = [];
+        private List<ILink> EastLinks = [];
+        private List<ILink> SouthLinks = [];
+        private List<ILink> WestLinks = [];
+
         public VissimEnvironment()
         {
             simulator = new Vissim();
-            simulator.set_AttValue("MaxNumberOfCOMRefs", "");
+            simulator.set_AttValue("MaxNumberOfCOMRefs", 0);
         }
 
         public void LoadNetwork(string path)
@@ -28,6 +34,7 @@ namespace VissimEnv
             //get lanes
             foreach (ILink Link in simulator.Net.Links)
             {
+                links.Add(Link);
                 if (!Convert.ToBoolean(Link.get_AttValue("IsConn")))
                 {
                     foreach (ILane Lane in Link.Lanes)
@@ -40,6 +47,30 @@ namespace VissimEnv
             cavsScalingFactor = new double[lanes.Count];
             maxCavsPerLane = new double[lanes.Count];
             signalControllers = simulator.Net.SignalControllers;
+        }
+        public void PrintLinkIDs()
+        {
+            foreach (ILink link in links)
+            {
+                int id = link.AttValue["No"];
+                Console.WriteLine(id);
+                if (id == 5 || id == 10006 || id == 10007 || id == 7 || id == 8)
+                {
+                    WestLinks.Add(link);
+                }
+                else if (id == 9 || id == 10 || id == 11 || id == 13)
+                {
+                    NorthLinks.Add(link);
+                }
+                else if (id == 1 || id == 10000 || id == 4 || id == 2)
+                {
+                    EastLinks.Add(link);
+                }
+                else if (id == 14 || id == 16)
+                {
+                    SouthLinks.Add(link);
+                }
+            }
         }
 
         public void RunSimulationStep()
@@ -58,7 +89,7 @@ namespace VissimEnv
 
         public void UseMaxSpeed()
         {
-            //simulator.SuspendUpdateGUI();
+            simulator.SuspendUpdateGUI();
             simulator.Simulation.set_AttValue("UseMaxSimSpeed", true);
             simulator.Graphics.CurrentNetworkWindow.set_AttValue("QuickMode", 1);
         }
@@ -247,6 +278,11 @@ namespace VissimEnv
         public int GetSimulationResolution()
         {
             return simulator.Simulation.get_AttValue("SimRes");
+        }
+
+        public void GetCVData()
+        {
+            throw new NotImplementedException();
         }
     }
 }
