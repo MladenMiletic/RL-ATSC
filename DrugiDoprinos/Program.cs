@@ -54,6 +54,7 @@ namespace DrugiDoprinos
             double delayBeforeAction = 0;
             int previousStateId = 0;
             Environment.InitializeSimulation(initializationTime);
+            Environment.GetVehicles();
             for (int j = 0; j < simulationDuration - initializationTime; j++)
             {
                 Environment.RunSimulationStep();

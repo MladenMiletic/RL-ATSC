@@ -15,12 +15,18 @@ namespace VissimEnv
 
         private double[] cavsScalingFactor = [];
         private double[] maxCavsPerLane = [];
-        private readonly object[] Attributes_veh = ["No", "VehType", "VehRoutSta"];
+        private readonly object[] Attributes_veh = ["No", "VehType", "Pos", "Clear", "InQueue"];
 
         private List<ILink> NorthLinks = [];
         private List<ILink> EastLinks = [];
         private List<ILink> SouthLinks = [];
         private List<ILink> WestLinks = [];
+
+        private List<IVehicle> NorthVehicles = [];
+        private List<IVehicle> EastVehicles = [];
+        private List<IVehicle> SouthVehicles = [];
+        private List<IVehicle> WestVehicles = [];
+
 
         public VissimEnvironment()
         {
@@ -47,6 +53,7 @@ namespace VissimEnv
             cavsScalingFactor = new double[lanes.Count];
             maxCavsPerLane = new double[lanes.Count];
             signalControllers = simulator.Net.SignalControllers;
+            PrintLinkIDs();
         }
         public void PrintLinkIDs()
         {
@@ -70,6 +77,30 @@ namespace VissimEnv
                 {
                     SouthLinks.Add(link);
                 }
+            }
+        }
+        public void GetVehicles()
+        {
+            foreach (ILink link in NorthLinks)
+            {
+                IIterator x = link.Vehs.GetFilteredSet("[VehType]==630").Iterator;
+
+                if (x.Count() != 0)
+                {
+                    NorthVehicles.AddRange(link.Vehs.GetAll());
+                }
+            }
+            foreach (ILink link in EastLinks)
+            {
+                EastVehicles.AddRange(link.Vehs.GetAll());
+            }
+            foreach (ILink link in SouthLinks)
+            {
+                SouthVehicles.AddRange(link.Vehs.GetAll());
+            }
+            foreach (ILink link in WestLinks)
+            {
+                WestVehicles.AddRange(link.Vehs.GetAll());
             }
         }
 
