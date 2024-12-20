@@ -81,26 +81,49 @@ namespace VissimEnv
         }
         public void GetVehicles()
         {
+            NorthVehicles.Clear();
+            EastVehicles.Clear();
+            SouthVehicles.Clear();
+            WestVehicles.Clear();
             foreach (ILink link in NorthLinks)
             {
-                IIterator x = link.Vehs.GetFilteredSet("[VehType]==630").Iterator;
+                IIterator NorthCVsIterator = link.Vehs.GetFilteredSet("[VehType] = \"630\"").Iterator;
 
-                if (x.Count() != 0)
+                while (NorthCVsIterator.Valid)
                 {
-                    NorthVehicles.AddRange(link.Vehs.GetAll());
+                    NorthVehicles.Add(NorthCVsIterator.Item);
+                    NorthCVsIterator.Next();
                 }
             }
             foreach (ILink link in EastLinks)
             {
-                EastVehicles.AddRange(link.Vehs.GetAll());
+                IIterator EastCVsIterator = link.Vehs.GetFilteredSet("[VehType] = \"630\"").Iterator;
+
+                while (EastCVsIterator.Valid)
+                {
+                    EastVehicles.Add(EastCVsIterator.Item);
+                    EastCVsIterator.Next();
+                }
             }
             foreach (ILink link in SouthLinks)
             {
-                SouthVehicles.AddRange(link.Vehs.GetAll());
+                IIterator SouthCVsIterator = link.Vehs.GetFilteredSet("[VehType] = \"630\"").Iterator;
+
+                while (SouthCVsIterator.Valid)
+                {
+                    SouthVehicles.Add(SouthCVsIterator.Item);
+                    SouthCVsIterator.Next();
+                }
             }
             foreach (ILink link in WestLinks)
             {
-                WestVehicles.AddRange(link.Vehs.GetAll());
+                IIterator WestCVsIterator = link.Vehs.GetFilteredSet("[VehType] = \"630\"").Iterator;
+
+                while (WestCVsIterator.Valid)
+                {
+                    WestVehicles.Add(WestCVsIterator.Item);
+                    WestCVsIterator.Next();
+                }
             }
         }
 
