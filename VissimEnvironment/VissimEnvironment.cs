@@ -22,10 +22,48 @@ namespace VissimEnv
         private List<ILink> SouthLinks = [];
         private List<ILink> WestLinks = [];
 
-        private List<IVehicle> NorthVehicles = [];
-        private List<IVehicle> EastVehicles = [];
-        private List<IVehicle> SouthVehicles = [];
-        private List<IVehicle> WestVehicles = [];
+        private List<CVVehicle> NorthVehicles = [];
+        private List<CVVehicle> EastVehicles = [];
+        private List<CVVehicle> SouthVehicles = [];
+        private List<CVVehicle> WestVehicles = [];
+
+        private int timeStepCounter = 0;
+
+        public double NorthQueueLengthAvg = 0;
+        public double EastQueueLengthAvg = 0;
+        public double SouthQueueLengthAvg = 0;
+        public double WestQueueLengthAvg = 0;
+
+        public double NorthQueueLengthMax = 0;
+        public double EastQueueLengthMax = 0;
+        public double SouthQueueLengthMax = 0;
+        public double WestQueueLengthMax = 0;
+
+        Dictionary<int, double> distanceLookup = new Dictionary<int, double>
+        {
+                    // West distances
+            {5, 285.314},
+            {10006, 90.853},
+            {10007, 91.525},
+            {7, 46.126},
+            {8, 17.835},
+    
+            // East distances
+            {1, 323.532},
+            {10000, 89.471},
+            {4, 58.503},
+            {2, 12.923},
+    
+            // South distances
+            {14, 308.144},
+            {16, 56.976},
+    
+            // North distances
+            {9, 173.748},
+            {10, 48.712},
+            {11, 25.35},
+            {13, 6.185}
+        };
 
 
         public VissimEnvironment()
@@ -79,52 +117,40 @@ namespace VissimEnv
                 }
             }
         }
-        public void GetVehicles()
+        void ProcessLinks(IEnumerable<ILink> links, List<CVVehicle> vehiclesList)
+        {
+            foreach (ILink link in links)
+            {
+                int id = link.AttValue["No"];
+                if (!distanceLookup.TryGetValue(id, out double distance))
+                {
+                    // If the id is not found in the dictionary, skip to the next link
+                    continue;
+                }
+
+                // Create the iterator once per link
+                IIterator cvIterator = link.Vehs.GetFilteredSet("[VehType] = \"630\"").Iterator;
+
+                // Iterate through the filtered vehicles
+                while (cvIterator.Valid)
+                {
+                    // Add each vehicle to the list with the precomputed distance
+                    vehiclesList.Add(new CVVehicle(cvIterator.Item, distance));
+                    cvIterator.Next();
+                }
+            }
+        }
+        public void GetVehiclesAndDistances()
         {
             NorthVehicles.Clear();
             EastVehicles.Clear();
             SouthVehicles.Clear();
             WestVehicles.Clear();
-            foreach (ILink link in NorthLinks)
-            {
-                IIterator NorthCVsIterator = link.Vehs.GetFilteredSet("[VehType] = \"630\"").Iterator;
 
-                while (NorthCVsIterator.Valid)
-                {
-                    NorthVehicles.Add(NorthCVsIterator.Item);
-                    NorthCVsIterator.Next();
-                }
-            }
-            foreach (ILink link in EastLinks)
-            {
-                IIterator EastCVsIterator = link.Vehs.GetFilteredSet("[VehType] = \"630\"").Iterator;
-
-                while (EastCVsIterator.Valid)
-                {
-                    EastVehicles.Add(EastCVsIterator.Item);
-                    EastCVsIterator.Next();
-                }
-            }
-            foreach (ILink link in SouthLinks)
-            {
-                IIterator SouthCVsIterator = link.Vehs.GetFilteredSet("[VehType] = \"630\"").Iterator;
-
-                while (SouthCVsIterator.Valid)
-                {
-                    SouthVehicles.Add(SouthCVsIterator.Item);
-                    SouthCVsIterator.Next();
-                }
-            }
-            foreach (ILink link in WestLinks)
-            {
-                IIterator WestCVsIterator = link.Vehs.GetFilteredSet("[VehType] = \"630\"").Iterator;
-
-                while (WestCVsIterator.Valid)
-                {
-                    WestVehicles.Add(WestCVsIterator.Item);
-                    WestCVsIterator.Next();
-                }
-            }
+            ProcessLinks(WestLinks, WestVehicles);
+            ProcessLinks(EastLinks, EastVehicles);
+            ProcessLinks(SouthLinks, SouthVehicles);
+            ProcessLinks(NorthLinks, NorthVehicles);
         }
 
         public void RunSimulationStep()
@@ -334,9 +360,118 @@ namespace VissimEnv
             return simulator.Simulation.get_AttValue("SimRes");
         }
 
-        public void GetCVData()
+        public void GetCVDataUMQLS()
         {
-            throw new NotImplementedException();
+            GetVehiclesAndDistances();
+            timeStepCounter++;
+            double NorthQueueLength = NorthVehicles.Where(v => v.queued == 1).DefaultIfEmpty(new CVVehicle()).Max(v => v.distanceToIntersection);
+            double EastQueueLength = EastVehicles.Where(v => v.queued == 1).DefaultIfEmpty(new CVVehicle()).Max(v => v.distanceToIntersection);
+            double SouthQueueLength = SouthVehicles.Where(v => v.queued == 1).DefaultIfEmpty(new CVVehicle()).Max(v => v.distanceToIntersection);
+            double WestQueueLength = WestVehicles.Where(v => v.queued == 1).DefaultIfEmpty(new CVVehicle()).Max(v => v.distanceToIntersection);
+
+            //THIS IS UMQLS
+            NorthQueueLength = NorthVehicles.Count == 0
+                            ? NorthQueueLength
+                            : NorthQueueLength * (NorthVehicles.Count + 1) / ((double)NorthVehicles.Count);
+            EastQueueLength = EastVehicles.Count == 0
+                            ? EastQueueLength
+                            : EastQueueLength * (EastVehicles.Count + 1) / ((double)EastVehicles.Count);
+            SouthQueueLength = SouthVehicles.Count == 0
+                            ? SouthQueueLength
+                            : SouthQueueLength * (SouthVehicles.Count + 1) / ((double)SouthVehicles.Count);
+            WestQueueLength = WestVehicles.Count == 0
+                            ? WestQueueLength
+                            : WestQueueLength * (WestVehicles.Count + 1) / ((double)WestVehicles.Count);
+
+            NorthQueueLengthAvg = (NorthQueueLengthAvg * (timeStepCounter - 1) + NorthQueueLength) / timeStepCounter;
+            EastQueueLengthAvg = (EastQueueLengthAvg * (timeStepCounter - 1) + EastQueueLength) / timeStepCounter;
+            SouthQueueLengthAvg = (SouthQueueLengthAvg * (timeStepCounter - 1) + SouthQueueLength) / timeStepCounter;
+            WestQueueLengthAvg = (WestQueueLengthAvg * (timeStepCounter - 1) + WestQueueLength) / timeStepCounter;
+
+            NorthQueueLengthMax = Math.Max(NorthQueueLengthMax, NorthQueueLength);
+            EastQueueLengthMax = Math.Max(EastQueueLengthMax, EastQueueLength);
+            SouthQueueLengthMax = Math.Max(SouthQueueLengthMax, SouthQueueLength);
+            WestQueueLengthMax = Math.Max(WestQueueLengthMax, WestQueueLength);
+        }
+        public void GetCVDataUMQLSSWPC()
+        {
+            GetVehiclesAndDistances();
+            timeStepCounter++;
+
+            double NorthTheory = NorthVehicles.Where(v => v.queued == 0).DefaultIfEmpty(new CVVehicle()).Min(v => v.distanceToIntersection - v.clearence);
+            double EastTheory = EastVehicles.Where(v => v.queued == 0).DefaultIfEmpty(new CVVehicle()).Min(v => v.distanceToIntersection - v.clearence);
+            double SouthTheory = SouthVehicles.Where(v => v.queued == 0).DefaultIfEmpty(new CVVehicle()).Min(v => v.distanceToIntersection - v.clearence);
+            double WestTheory = WestVehicles.Where(v => v.queued == 0).DefaultIfEmpty(new CVVehicle()).Min(v => v.distanceToIntersection - v.clearence);
+
+            //THIS IS SWPC
+            double NorthQueueLength = NorthVehicles.Where(v => v.queued == 1 && v.distanceToIntersection <= NorthTheory).DefaultIfEmpty(new CVVehicle()).Max(v => v.distanceToIntersection);
+            double EastQueueLength = EastVehicles.Where(v => v.queued == 1 && v.distanceToIntersection <= EastTheory).DefaultIfEmpty(new CVVehicle()).Max(v => v.distanceToIntersection);
+            double SouthQueueLength = SouthVehicles.Where(v => v.queued == 1 && v.distanceToIntersection <= SouthTheory).DefaultIfEmpty(new CVVehicle()).Max(v => v.distanceToIntersection);
+            double WestQueueLength = WestVehicles.Where(v => v.queued == 1 && v.distanceToIntersection <= WestTheory).DefaultIfEmpty(new CVVehicle()).Max(v => v.distanceToIntersection);
+
+            //THIS IS UMQLS
+            NorthQueueLength = NorthVehicles.Count == 0
+                            ? NorthQueueLength
+                            : NorthQueueLength * (NorthVehicles.Count + 1) / ((double)NorthVehicles.Count);
+            EastQueueLength = EastVehicles.Count == 0
+                            ? EastQueueLength
+                            : EastQueueLength * (EastVehicles.Count + 1) / ((double)EastVehicles.Count);
+            SouthQueueLength = SouthVehicles.Count == 0
+                            ? SouthQueueLength
+                            : SouthQueueLength * (SouthVehicles.Count + 1) / ((double)SouthVehicles.Count);
+            WestQueueLength = WestVehicles.Count == 0
+                            ? WestQueueLength
+                            : WestQueueLength * (WestVehicles.Count + 1) / ((double)WestVehicles.Count);
+
+            NorthQueueLengthAvg = (NorthQueueLengthAvg * (timeStepCounter - 1) + NorthQueueLength) / timeStepCounter;
+            EastQueueLengthAvg = (EastQueueLengthAvg * (timeStepCounter - 1) + EastQueueLength) / timeStepCounter;
+            SouthQueueLengthAvg = (SouthQueueLengthAvg * (timeStepCounter - 1) + SouthQueueLength) / timeStepCounter;
+            WestQueueLengthAvg = (WestQueueLengthAvg * (timeStepCounter - 1) + WestQueueLength) / timeStepCounter;
+
+            NorthQueueLengthMax = Math.Max(NorthQueueLengthMax, NorthQueueLength);
+            EastQueueLengthMax = Math.Max(EastQueueLengthMax, EastQueueLength);
+            SouthQueueLengthMax = Math.Max(SouthQueueLengthMax, SouthQueueLength);
+            WestQueueLengthMax = Math.Max(WestQueueLengthMax, WestQueueLength);
+        }
+        public void ResetTimeStepCounter()
+        {
+            timeStepCounter = 0;
+            NorthQueueLengthAvg = 0;
+            EastQueueLengthAvg = 0;
+            SouthQueueLengthAvg = 0;
+            WestQueueLengthAvg = 0;
+
+            NorthQueueLengthMax = 0;
+            EastQueueLengthMax = 0;
+            SouthQueueLengthMax = 0;
+            WestQueueLengthMax = 0;
+        }
+    }
+    public class CVVehicle
+    {
+        public IVehicle? vehicle;
+        public double distanceToIntersection;
+        public double clearence
+        {
+            get;
+        }
+        public int queued
+        {
+            get => vehicle.AttValue["InQueue"];
+        }
+        public CVVehicle(IVehicle vehicle, double distance)
+        {
+            this.vehicle = vehicle;
+            this.distanceToIntersection = distance - vehicle.AttValue["Pos"];
+            clearence = vehicle.AttValue["Clear"];
+            //queued = vehicle.AttValue["InQueue"];
+        }
+        public CVVehicle()
+        {
+            this.vehicle = null;
+            this.distanceToIntersection = 0;
+            clearence = -500;
+            //            //queued = false;
         }
     }
 }

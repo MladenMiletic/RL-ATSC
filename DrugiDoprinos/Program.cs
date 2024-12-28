@@ -29,7 +29,6 @@ namespace DrugiDoprinos
             string modelPath = "C:\\Users\\mmiletic\\Desktop\\Simulacijski modeli VISSIM\\model3\\model3_realistic_CV.inpx";
             Environment.LoadNetwork(modelPath);
             Environment.UseMaxSpeed();
-            Environment.PrintLinkIDs();
             //LOOP iterations
 
             for (int i = 0; i < numberOfSimulations; i++)
@@ -54,7 +53,6 @@ namespace DrugiDoprinos
             double delayBeforeAction = 0;
             int previousStateId = 0;
             Environment.InitializeSimulation(initializationTime);
-            Environment.GetVehicles();
             for (int j = 0; j < simulationDuration - initializationTime; j++)
             {
                 Environment.RunSimulationStep();
@@ -62,11 +60,21 @@ namespace DrugiDoprinos
                 {
                     break;
                 }
+                Environment.GetCVDataUMQLS();
                 if (j % agentTimeStep != 0)
                 {
                     continue;
                 }
-                Environment.GetCVData();
+                
+                Console.WriteLine($"NorthAvg: {Environment.NorthQueueLengthAvg}");
+                Console.WriteLine($"NorthMax: {Environment.NorthQueueLengthMax}");
+                Console.WriteLine($"SouthAvg: {Environment.SouthQueueLengthAvg}");
+                Console.WriteLine($"SouthMax: {Environment.SouthQueueLengthMax}");
+                Console.WriteLine($"EastAvg: {Environment.EastQueueLengthAvg}");
+                Console.WriteLine($"EastMax: {Environment.EastQueueLengthMax}");
+                Console.WriteLine($"WestAvg: {Environment.WestQueueLengthAvg}");
+                Console.WriteLine($"WestMax: {Environment.WestQueueLengthMax}");
+                Environment.ResetTimeStepCounter();
                 //StateList.Add(Environment.GetLaneStateInfo());
                 //int stateId = Agent.GetStateId(StateList.Last());
                 //int actionId = Agent.SelectAction(stateId);
