@@ -41,7 +41,24 @@ namespace Quest.ML.Clustering.Neural.GNG
         {
             this.inputDimensionality = inputDimensionality;
             this.maxNeurons = numberOfNeurons;
-            InitializeNetwork();
+            //InitializeNetwork();
+        }
+
+        public override void Add(IGNGNeuron item)
+        {
+            item.ID = ++lastNodeID;
+            base.Add(item);
+            OnNeuronAddition(item);
+        }
+
+        public override bool Remove(IGNGNeuron item)
+        {
+            bool RemoveResult = base.Remove(item);
+            if (RemoveResult)
+            {
+                OnNeuronDeletion(item);
+            }
+            return RemoveResult;
         }
 
         public void InitializeNetwork()
@@ -52,8 +69,8 @@ namespace Quest.ML.Clustering.Neural.GNG
             IGNGNeuron neuron2 = new IGNGNeuron(this.inputDimensionality);
             neuron2.RandomizeWeights();
             neuron2.ID = 2;
-            base.Add(neuron1);
-            base.Add(neuron2);
+            this.Add(neuron1);
+            this.Add(neuron2);
             this.AddEdge(neuron1, neuron2);
 
 

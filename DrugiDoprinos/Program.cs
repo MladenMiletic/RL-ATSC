@@ -17,6 +17,7 @@ namespace DrugiDoprinos
         private static readonly int initializationTime = 900;
         private static readonly int simulationDuration = 59400;
         private static readonly int agentTimeStep = 300;
+        private static readonly int sampleTimeStep = 5;
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, World!");
@@ -35,7 +36,7 @@ namespace DrugiDoprinos
             {
                 PerformLearningSimulation();
                 SaveResults();
-                UpdateParams();
+                UpdateParams(i);
             }
         }
 
@@ -60,50 +61,64 @@ namespace DrugiDoprinos
                 {
                     break;
                 }
-                Environment.GetCVDataUMQLS();
+                if (j % sampleTimeStep == 0)
+                {
+                    Environment.GetCVDataUMQLSSWPC();
+                }
+                
                 if (j % agentTimeStep != 0)
                 {
                     continue;
                 }
-                
-                Console.WriteLine($"NorthAvg: {Environment.NorthQueueLengthAvg}");
-                Console.WriteLine($"NorthMax: {Environment.NorthQueueLengthMax}");
-                Console.WriteLine($"SouthAvg: {Environment.SouthQueueLengthAvg}");
-                Console.WriteLine($"SouthMax: {Environment.SouthQueueLengthMax}");
-                Console.WriteLine($"EastAvg: {Environment.EastQueueLengthAvg}");
-                Console.WriteLine($"EastMax: {Environment.EastQueueLengthMax}");
-                Console.WriteLine($"WestAvg: {Environment.WestQueueLengthAvg}");
-                Console.WriteLine($"WestMax: {Environment.WestQueueLengthMax}");
-                Environment.ResetTimeStepCounter();
-                //StateList.Add(Environment.GetLaneStateInfo());
-                //int stateId = Agent.GetStateId(StateList.Last());
-                //int actionId = Agent.SelectAction(stateId);
-                //Environment.PerformAction(0, actionId);
+
+                double[] rawState = Environment.GetState();
+                StateList.Add(rawState);
+                int stateId = Agent.GetStateId(StateList.Last());
+                int actionId = Agent.SelectAction(stateId);
+                Environment.SelectSignalProgram(0, actionId);
                 if (!firstAction)
                 {
-                    //double delayAfterAction = Environment.GetAverageDelayOfLastTimeStep();
-                    //double reward = delayBeforeAction - delayAfterAction;
-                    //delayBeforeAction = delayAfterAction;
-                    //Agent.Learn(previousStateId, actionId, stateId, reward);
-                    //previousStateId = stateId;
+                    double delayAfterAction = Environment.GetAverageDelayOfLastTimeStep();
+                    double reward = delayBeforeAction - delayAfterAction;
+                    delayBeforeAction = delayAfterAction;
+                    Agent.Learn(previousStateId, actionId, stateId, reward);
+                    previousStateId = stateId;
                 }
                 else
                 {
-                    //delayBeforeAction = Environment.GetAverageDelayOfLastTimeStep();
-                    //previousStateId = stateId;
+                    delayBeforeAction = Environment.GetAverageDelayOfLastTimeStep();
+                    previousStateId = stateId;
                     firstAction = false;
                 }
+                Environment.ResetTimeStepCounter();
             }
         }
 
-        private static void UpdateParams()
+        private static void UpdateParams(int iteration)
         {
-            throw new NotImplementedException();
+            ((EpsilonGreedySelectionPolicy)Agent.SelectionPolicy).Epsilon = 0.95 * Math.Pow(0.9, iteration + 1) + 0.05;
         }
 
         private static void SaveResults()
         {
-            throw new NotImplementedException();
+            SaveData(Environment.GetTotalTravelTime(), "TTT.csv");
+            SaveData(Environment.GetAverageDelay(), "Delay.csv");
+            SaveData(Environment.GetTotalNumberOfStops(), "Stops.csv");
+            Console.WriteLine(Environment.GetTotalTravelTime());
+        }
+
+        static void SaveData(double data, string filePath)
+        {
+            try
+            {
+                using StreamWriter sw = new StreamWriter(filePath, true);
+                sw.WriteLine(data);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occurred while writing the CSV file:");
+                Console.WriteLine(e.Message);
+            }
         }
 
 
