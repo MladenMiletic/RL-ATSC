@@ -100,6 +100,10 @@ namespace Quest.ML.ReinforcementLearning.IGNGAgents
         {
             return SelectionPolicy.SelectAction(QTable[stateID], ActivationCounters[stateID]);
         }
+        public int SelectAction(int stateID, bool greedy)
+        {
+            return SelectionPolicy.SelectAction(QTable[stateID], null);
+        }
 
         private void HandleNeuronAddition(object? sender, IGNGNeuron addedNeuron)
         {
@@ -119,6 +123,39 @@ namespace Quest.ML.ReinforcementLearning.IGNGAgents
         private int[] InitializeQTableRowActivationCounter()
         {
             return new int[numberOfActions];
+        }
+
+        public void SaveQTable(string filePath)
+        {
+            using (var writer = new StreamWriter(filePath))
+            {
+                foreach (var entry in QTable)
+                {
+                    // Combine the key and the values into a single CSV row
+                    var line = $"{entry.Key},{string.Join(",", entry.Value)}";
+                    writer.WriteLine(line);
+                }
+            }
+
+            Console.WriteLine($"QTable has been saved to {filePath}");
+        }
+        public void ReadQTable(string filePath)
+        {
+            using (var reader = new StreamReader(filePath))
+            {
+
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(',');
+                    var key = int.Parse(values[0]);
+                    var qValues = values.Skip(1).Select(double.Parse).ToArray();
+                    QTable[key] = qValues;
+                }
+            }
+            gasNetworkStateIdentifier.NeuronAdded -= HandleNeuronAddition;
+            gasNetworkStateIdentifier.NeuronDeleted -= HandleNeuronDeletion;
+            Console.WriteLine($"QTable has been read from {filePath}");
         }
     }
 }

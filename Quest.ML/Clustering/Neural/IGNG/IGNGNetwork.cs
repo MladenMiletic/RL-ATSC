@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Quest.ML.Clustering.Neural.GNG
 {
@@ -17,7 +18,7 @@ namespace Quest.ML.Clustering.Neural.GNG
         public int maxAge = 7;
         public int maturationAge = 5;
         public double growingDistance = 80;
-        public int lastNodeID = 2;
+        public int lastNodeID = 0;
         public INeighbourhoodFunction neighbourhoodFunction = new LateralInteractionNeighbourhoodFunction();
 
         public IGNGNeuron BMU1 = null;
@@ -139,8 +140,6 @@ namespace Quest.ML.Clustering.Neural.GNG
                     IGNGNeuron embryo = new IGNGNeuron(this.InputDimensionality);
                     embryo.SetWeights(input);
                     this.Add(embryo);
-                    embryo.ID = lastNodeID + 1;
-                    lastNodeID = embryo.ID;
                     BMU1 = embryo;
                 }
                 BMU1.IncrementAgeCounter();
@@ -156,8 +155,6 @@ namespace Quest.ML.Clustering.Neural.GNG
                         embryo.SetWeights(input);
                         this.Add(embryo);
                         AddEdge(embryo, BMU1);
-                        embryo.ID = lastNodeID + 1;
-                        lastNodeID = embryo.ID;
                         BMU1 = embryo;
                     }
                     BMU1.IncrementAgeCounter();
@@ -298,6 +295,40 @@ namespace Quest.ML.Clustering.Neural.GNG
         public virtual void OnNeuronAddition(IGNGNeuron addedNeuron)
         {
             NeuronAdded?.Invoke(this, addedNeuron);
+        }
+
+        public void SaveNetwork(string filePath)
+        {
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+
+                foreach (IGNGNeuron neuron in this)
+                {
+                    writer.WriteLine(string.Join(",", neuron.Weights));
+                }
+            }
+        }
+        public void ReadNetwork(string filePath, SortedDictionary<int, double[]> QTable)
+        {
+            this.Clear();
+            int i = 0;
+            List<int> IDs = QTable.Keys.ToList();
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+
+                    string[] weights = line.Split(',');
+                    double[] weightsDouble = Array.ConvertAll(weights, double.Parse);
+                    IGNGNeuron neuron = new IGNGNeuron(weights.Count());
+                    neuron.SetWeights(weightsDouble);
+                    this.inputDimensionality = weightsDouble.Length;
+                    this.Add(neuron);
+                    neuron.ID = IDs[i];
+                    i++;
+                }
+            }
         }
     }
 }

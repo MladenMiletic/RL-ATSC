@@ -12,6 +12,7 @@ namespace VissimEnv
         private List<ILane> lanes = [];
         private List<ILink> links = [];
         private ISignalControllerContainer signalControllers;
+        private List<IDesSpeedDecision> desSpeedDecisions = [];
 
         private double[] cavsScalingFactor = [];
         private double[] maxCavsPerLane = [];
@@ -92,6 +93,9 @@ namespace VissimEnv
             maxCavsPerLane = new double[lanes.Count];
             signalControllers = simulator.Net.SignalControllers;
             PrintLinkIDs();
+            desSpeedDecisions.Add(simulator.Net.DesSpeedDecisions.get_ItemByKey(11));
+            desSpeedDecisions.Add(simulator.Net.DesSpeedDecisions.get_ItemByKey(12));
+            desSpeedDecisions.Add(simulator.Net.DesSpeedDecisions.get_ItemByKey(13));
         }
         public void PrintLinkIDs()
         {
@@ -135,7 +139,7 @@ namespace VissimEnv
                         Console.WriteLine("Vehicle null!");
                         continue;
                     }
-                    if (vehicle.AttValue["VehType"] == "630")
+                    if (vehicle.AttValue["VehType"] == "622")
                     {
 
                         vehiclesList.Add(new CVVehicle(vehicle, distance));
@@ -492,6 +496,69 @@ namespace VissimEnv
             ISignalController controller = signalControllers.get_ItemByKey(agentID + 1);
 
             controller.AttValue["ProgNo"] = actionId + 1;
+        }
+
+        public void ApplyVariableSpeedLimit(int actionIdVSL)
+        {
+            int speedDistributionId = 40 + actionIdVSL*10;
+            foreach (var speedDecision in desSpeedDecisions)
+            {
+                speedDecision.AttValue["DesSpeedDistr(10)"] = speedDistributionId;
+                speedDecision.AttValue["DesSpeedDistr(70)"] = speedDistributionId;
+            }
+        }
+
+        public double GetDelayVSL()
+        {
+            return simulator.Net.Nodes.get_ItemByKey(6).TotRes.get_AttValue("VehDelay(Current, Last, 70)");
+        }
+
+        public double GetDelayATSC2()
+        {
+            return simulator.Net.Nodes.get_ItemByKey(2).TotRes.get_AttValue("VehDelay(Current, Last, 70)");
+        }
+
+        public double GetDelayATSC3()
+        {
+            return simulator.Net.Nodes.get_ItemByKey(4).TotRes.get_AttValue("VehDelay(Current, Last, 70)");
+        }
+
+        public double GetDelayATSC1()
+        {
+            return simulator.Net.Nodes.get_ItemByKey(3).TotRes.get_AttValue("VehDelay(Current, Last, 70)");
+        }
+
+        public double[] GetStateLucko()
+        {
+            var nodeVSL = simulator.Net.Nodes.get_ItemByKey(6);
+            var nodeATSC1 = simulator.Net.Nodes.get_ItemByKey(3);
+            var nodeATSC2 = simulator.Net.Nodes.get_ItemByKey(2);
+            var nodeATSC3 = simulator.Net.Nodes.get_ItemByKey(4);
+
+            double[] stateVector = new double[32];
+            int i = 0;
+            foreach (IMovement mov in nodeVSL.Movements)
+            {
+                stateVector[i] = mov.get_AttValue("VehDelay(Current, Last, 70)") ?? 0;
+                i++;
+            }
+            foreach (IMovement mov in nodeATSC1.Movements)
+            {
+                stateVector[i] = mov.get_AttValue("VehDelay(Current, Last, 70)") ?? 0;
+                i++;
+            }
+            foreach (IMovement mov in nodeATSC2.Movements)
+            {
+                stateVector[i] = mov.get_AttValue("VehDelay(Current, Last, 70)") ?? 0;
+                i++;
+            }
+            foreach (IMovement mov in nodeATSC3.Movements)
+            {
+                stateVector[i] = mov.get_AttValue("VehDelay(Current, Last, 70)") ?? 0;
+                i++;
+            }
+
+            return stateVector;
         }
     }
     public class CVVehicle
